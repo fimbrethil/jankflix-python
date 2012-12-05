@@ -3,14 +3,22 @@ Created on Nov 26, 2012
 
 @author: christian
 '''
-from site import Site
+__all__ = ["HostSite"]
+from utils.site import Site
 
 class HostSite(Site):
     '''
     classdocs
     '''
     def getVideo(self):
+        '''
+        @return: URL at which the target video is located
+        @rtype: string
+        '''
         raise NotImplementedError
     def getBaseUrl(self):
+        '''
+        @return: A string that identifies the website and one which will return true if site_url contains rval is called.
+        @rtype: string
+        '''
         raise NotImplementedError
-    
