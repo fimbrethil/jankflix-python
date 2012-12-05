@@ -3,6 +3,7 @@ Created on Nov 26, 2012
 
 @author: christian
 '''
+__all__ = ["MovReel"]
 from BeautifulSoup import BeautifulSoup
 from hostsite import HostSite
 
@@ -11,7 +12,7 @@ class MovReel(HostSite):
     classdocs
     '''
     def getBaseUrl(self):
-        return "http://www.movreel.com/"
+        return "http://www.movreel.com"
 
     def getVideo(self):
         filename = self.soup.find("input", {"name":"fname", "type":"hidden" }).get("value")

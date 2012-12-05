@@ -3,9 +3,10 @@ Created on Nov 26, 2012
 
 @author: christian
 '''
+__all__ = ["PutLocker", "SockShare"]
 from BeautifulSoup import BeautifulSoup
 from hostsite import HostSite
-from utils import getBefore, getAfter
+from utils.utils import getAfter, getBefore
 
 
 

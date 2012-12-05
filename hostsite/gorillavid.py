@@ -3,15 +3,17 @@ Created on Nov 26, 2012
 
 @author: christian
 '''
+__all__ = ["GorillaVid", "MovPod", "DaClipz"]
 from BeautifulSoup import BeautifulSoup
-from utils import getAfter, getBefore
 from hostsite import HostSite
+from utils.utils import getAfter, getBefore
+
 class GorillaVid(HostSite):
     '''
     classdocs
     '''
     def getBaseUrl(self):
-        return "http://www.gorillavid.in"
+        return "http://www.gorillavid.com"
 
     def getVideo(self):
         filename = self.soup.find("input", {"name":"fname", "type":"hidden"}).get("value")
@@ -31,14 +33,14 @@ class GorillaVid(HostSite):
         script = script[2].getText()
         script = getAfter(script, 'file: "')
         script = getBefore(script, '",')
-        return script
+        return str(script)
 
 class MovPod(GorillaVid):
     '''
     classdocs
     '''
     def getBaseUrl(self):
-        return "http://www.movpod.in"
+        return "http://www.movpod.com"
 
 class DaClipz(GorillaVid):
     '''
