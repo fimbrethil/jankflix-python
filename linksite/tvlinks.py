@@ -4,9 +4,9 @@ Created on Nov 26, 2012
 @author: christian
 '''
 import urllib2
-from site import Site
 from BeautifulSoup import BeautifulSoup
 from linksite import LinkSite
+from utils.site import Site
 
 class TVLinks(LinkSite):
     '''
@@ -64,7 +64,7 @@ class TVLinks(LinkSite):
         links = [str(res.get("href")) for res in resultSoup.findAll("a", "outer list cfix")]
         tlTuples = []
         for i in range(len(titles)):
-            tlTuples.append((titles[i], links[i]))
+            tlTuples.append((titles[i], "http://www.tv-links.eu" + links[i]))
         return tlTuples
 
 

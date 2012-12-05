@@ -4,9 +4,10 @@ Created on Nov 26, 2012
 @author: christian
 '''
 from linksite import LinkSite
-from utils import getAfter, getBefore
 import urllib2
 from BeautifulSoup import BeautifulSoup
+from utils.utils import getAfter, getBefore
+import urlparse
 
 class OneChannel(LinkSite):
     '''
@@ -72,6 +73,13 @@ class OneChannel(LinkSite):
         url = "http://www.1channel.ch" + links[index].find("a").get("href")
         request = urllib2.Request(url, None, self.values)
         response = urllib2.urlopen(request)
+        parseresult = urlparse.urlparse(response.geturl())
+        if parseresult.hostname == "www.1channel.ch":
+            res = str(response.read())
+            response.close()
+            res = res.replace("iso-8859-1", "utf-8")
+            nextSoup = BeautifulSoup(res)
+            return nextSoup.findAll("frame")[1].get("src")
         return str(response.geturl())
 
     @staticmethod
@@ -87,6 +95,6 @@ class OneChannel(LinkSite):
         results = resultSoup.findAll("div", {"class":"index_item index_item_ie"})
         for result in results:
             a = result.find("a")
-            ret.append((str(a.get("title")), str(a.get("href"))))
+            ret.append((str(a.get("title")), "http://www.1channel.ch" + str(a.get("href"))))
         return ret
 
