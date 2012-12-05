@@ -1,26 +1,26 @@
 jankflix-python
 ===============
 
-A jankier way to watch things!
+A command line interface (CLI) for automatically downloading files from your favorite video linking and video hosting sites. 
 
-This project enables the user to fully navigate and download content from link and video hosting sites without ever using a browser!
+Want to watch episode 2 of season 3 of Avatar the Last Airbender? Just enter those three data points into the command line and this program will pull the video file off the site, drop it into VLC, and play it effortlessly!
 
-By introducing a couple key abstraction layers we make adding support of new sites simple and easy. 
+By introducing a couple key abstraction layers this makes adding support of new sites simple and easy. 
 
-For example, if we wanted to print the result of a search:
+For example, if you wanted to print the result of a search:
 ```python
 from linksite.tvlinks import TVLinks
 print TVLinks.searchSite(whatever_search_query)
 ```
 
-Then, let's say we want to get the seasons for the show we just searched for:
+Then, let's say you want to get the seasons for the show you just searched for:
 ```python
 url = "http://www.tv-links.eu" + TVLinks.searchSite(whatever_search_query)[0][1]
 tl = TVLinks(url)
 print tl.getSeasons()
 ```
 
-Perhaps we just have a link to a video hosting site that we want translated into an actual file: 
+Perhaps you just have a link to a video hosting site that you want translated into an actual file: 
 ```python
 from hostsite.putlocker import PutLocker
 pl = PutLocker(putlocker_link)
