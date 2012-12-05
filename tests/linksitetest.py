@@ -48,8 +48,8 @@ class OneChannelTest(BaseLinkSiteTest, unittest.TestCase):
         for name, link in search:
             if "Airbender" in name :
                 l = link
-#        cls.failIf(l == None)
-        cls.tl = OneChannel("http://1channel.ch" + l)
+        print l
+        cls.tl = OneChannel(l)
         print "in " + cls.__name__ + " passed " + str(stack()[0][3])
 
 class TVLinksTest(BaseLinkSiteTest, unittest.TestCase):
@@ -60,8 +60,7 @@ class TVLinksTest(BaseLinkSiteTest, unittest.TestCase):
         for name, link in search:
             if name == "Avatar: The Last Airbender":
                 l = link
-#        cls.failIf(l == None)
-        cls.tl = TVLinks("http://www.tv-links.eu" + l)
+        cls.tl = TVLinks(l)
         print "in " + cls.__name__ + " passed " + str(stack()[0][3])
 
 if __name__ == "__main__":
