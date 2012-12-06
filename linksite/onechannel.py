@@ -8,11 +8,13 @@ import urllib2
 from BeautifulSoup import BeautifulSoup
 from utils.utils import getAfter, getBefore
 import urlparse
+from utils.memoization import memoized
 
 class OneChannel(LinkSite):
     '''
     classdocs
     '''
+    @memoized
     def getSEParts(self):
         items = self.soup.findAll("div", {"class":"tv_episode_item"})
         ret = []
