@@ -4,16 +4,10 @@ Created on Nov 26, 2012
 @author: christian
 '''
 import argparse
-import urllib2
-from multiprocessing import Process
-from subprocess import call
 from linksite.onechannel import OneChannel
-from utils.utils import getAfter, getBefore, download
 import atexit
 import subprocess
-from utils.site import Site
-from utils import site
-import shutil
+from utils import dl
 import os
 
 
@@ -45,8 +39,9 @@ def main():
                        help = 'a string to search for in linksites')
     parser.add_argument('-s', dest = 'season', help = 'season to watch', required = True)
     parser.add_argument('-e', dest = 'episode', help = 'episode to watch', required = True)
-    parser.add_argument('-c', dest = 'command', help = 'command to run when the video starts downloading', required = False)
-    parser.add_argument('-n', dest = 'name', help = 'name on which to append the season and episode and save to disc', required = False)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-c', dest = 'command', help = 'command to run when the video starts downloading', required = False)
+    group.add_argument('-n', dest = 'name', help = 'name on which to append the season and episode and save to disc', required = False)
     args = parser.parse_args()
     query = args.query
     season = args.season
@@ -64,35 +59,26 @@ def main():
 
     videoURL = oc.getHostSite(season, episode)
 
-#    a = '''import urllib2
-#import shutil
-#    values = {'User-Agent' : "''' + site.USER_AGENT + '''"}
-#    request = urllib2.Request("''' + videoURL + '''", None, values)
-#    response = urllib2.urlopen(request)
-#    filename = response.info()['Content-Disposition']
-#    filename = filename[filename.index("filename='") + len("filename='"):]
-#    filename = filename[:filename.index("'")]
-#    filename = "./" + filename
-#    print filename
-
-#with open(filename, 'wb') as f:
-#    shutil.copyfileobj(response, f)
-#'''
     if name != None:
-        filename = name + "s" + season + "e" + episode + ".vlc"
+        filename = name + "s" + season + "e" + episode + ".flv"
     else:
         filename = "video.flv"
-    wgetCommand = ["wget", "-U", '"' + site.USER_AGENT + '"', '-O', filename, videoURL]
     if command:
-        proc = subprocess.Popen(wgetCommand)
-        atexit.register(onexit, proc = proc)
+        processs,status = dl.startDownloads([(videoURL,filename)])
+        atexit.register(onexit, proc = processs[0],rmFile = filename)
         subprocess.call([command, filename])
+        processs[0].terminate()
     else:
-        subprocess.call(wgetCommand)
+        processs,status = dl.startDownloads([(videoURL,filename)])
+        atexit.register(onexit, proc = processs[0])
+        while processs[0].is_alive:
+            print status[0].get(True,2)
 
 
-def onexit(proc):
-    proc.kill()
+def onexit(proc,rmFile=None):
+    proc.terminate()
+    if rmFile:
+        os.remove(rmFile)
 if __name__ == '__main__':
     main()
 
