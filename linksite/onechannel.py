@@ -9,6 +9,7 @@ from BeautifulSoup import BeautifulSoup
 from utils.utils import getAfter, getBefore
 import urlparse
 from utils.memoization import memoized
+import urllib
 
 class OneChannel(LinkSite):
     '''
@@ -88,9 +89,13 @@ class OneChannel(LinkSite):
     def searchSite(query):
         surl = "http://www.1channel.ch/index.php"
         soup = BeautifulSoup(OneChannel.getPage(surl))
-
         key = soup.find("input", {"type":"hidden", "name":"key"}).get("value")
-        surl = "http://www.1channel.ch/index.php?search_keywords=" + query + "&key=" + key + "&search_section=2"
+        print query
+        params = {"search_keywords":query,
+                  "key":key,
+                  "search_section":"2"}
+        surl = "http://www.1channel.ch/index.php?"+urllib.urlencode(params)
+        print surl
         resultSoup = BeautifulSoup(OneChannel.getPage(surl))
         ret = []
 

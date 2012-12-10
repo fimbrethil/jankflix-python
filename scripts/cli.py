@@ -52,13 +52,20 @@ def main():
     for i  in range(len(searchResult)):
         title, link = searchResult[i]
         print "%i : %s    (%s)" % (i, title, link)
-    sel = input("Which one do you want to watch: ")
-    title, link = searchResult[sel]
+    while True:
+        sel = raw_input("Which one do you want to watch: ")
+        if sel.isdigit():
+            selnum = int(sel)
+            if selnum >= 0 and selnum < len(searchResult):
+                break
+        print "Invalid selection"
+    
+    title, link = searchResult[selnum]
+    print "Accessing show page"
     oc = OneChannel(link)
-    #print oc.getHostSite(season, episode)
-
+    print "Getting host site"
     videoURL = oc.getHostSite(season, episode)
-
+    
     if name != None:
         filename = name + "s" + season + "e" + episode + ".flv"
     else:
