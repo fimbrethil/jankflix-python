@@ -7,7 +7,7 @@ import urllib2
 from BeautifulSoup import BeautifulSoup
 import urllib
 
-USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.11 (KHTML, like Gecko) Ubuntu/12.04 Chromium/20.0.1132.47 Chrome/20.0.1132.47 Safari/536.11"
+USER_AGENT = "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)"
 
 class Site(object):
     '''

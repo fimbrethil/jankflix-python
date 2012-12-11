@@ -28,18 +28,20 @@ class OneChannel(LinkSite):
         return ret
 
     def getSeasons(self):
-        ret = []
+        seasons = []
         for part, souppart in self.getSEParts():
-            if part[1] not in ret:
-                ret.append(str(part[1]))
-        return ret
+            if part[1] not in seasons:
+                seasons.append(str(part[1]))
+        intSeasons = [int(season) for season in seasons]
+        return intSeasons
 
     def getEpisodes(self, season):
-        ret = []
+        episodes = []
         for part, souppart in self.getSEParts():
             if part[1] == str(season):
-                ret.append(str(part[3]))
-        return ret
+                episodes.append(str(part[3]))
+        intEpisodes = [int(episode) for episode in episodes]
+        return intEpisodes
 
     def getEpisodeNames(self, season):
         ret = []
@@ -90,12 +92,10 @@ class OneChannel(LinkSite):
         surl = "http://www.1channel.ch/index.php"
         soup = BeautifulSoup(OneChannel.getPage(surl))
         key = soup.find("input", {"type":"hidden", "name":"key"}).get("value")
-        print query
         params = {"search_keywords":query,
                   "key":key,
                   "search_section":"2"}
         surl = "http://www.1channel.ch/index.php?"+urllib.urlencode(params)
-        print surl
         resultSoup = BeautifulSoup(OneChannel.getPage(surl))
         ret = []
 

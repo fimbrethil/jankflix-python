@@ -21,12 +21,12 @@ class TVLinks(LinkSite):
         lastSeason = self.soup.find("div", "bg_imp biggest bold dark clear").getText()
         ret.append(str(lastSeason[7:]))
         for r in self.soup.findAll("div", "bg_imp biggest bold dark clear mt_1"):
-            ret.append(str(r.getText()[7:8]))
+            ret.append(int(r.getText()[7:8]))
         return ret
 
     def getEpisodes(self, season):
         episodes = self.soup.find("ul", id = "ul_snr" + str(season)).findAll("span", "c1")
-        return [str(ep.getText()[8:]) for ep in episodes]
+        return [int(ep.getText()[8:]) for ep in episodes]
 
     def getEpisodeNames(self, season):
         episodes = self.soup.find("ul", id = "ul_snr" + str(season)).findAll("span", "c2")

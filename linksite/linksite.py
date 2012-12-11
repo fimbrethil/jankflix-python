@@ -29,7 +29,7 @@ class LinkSite(Site):
     def getSeasons(self):
         '''
         @return: A list of season numbers
-        @rtype: list
+        @rtype: list of ints
         '''
         raise NotImplementedError
     def getEpisodes(self, season):
@@ -37,7 +37,7 @@ class LinkSite(Site):
         
         @param season: Season for which to get episodes
         @return: A list of episode numbers
-        @rtype: list
+        @rtype: list of ints
         '''
         raise NotImplementedError
     def getEpisodeNames(self, season):

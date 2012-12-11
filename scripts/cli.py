@@ -35,34 +35,65 @@ Functionality we want to provide:
 
 def main():
     parser = argparse.ArgumentParser(description = 'Jankflix - A jankier way to watch things!')
-    parser.add_argument('query', metavar = 'search_string', type = str,
-                       help = 'a string to search for in linksites')
-    parser.add_argument('-s', dest = 'season', help = 'season to watch', required = True)
-    parser.add_argument('-e', dest = 'episode', help = 'episode to watch', required = True)
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-c', dest = 'command', help = 'command to run when the video starts downloading', required = False)
-    group.add_argument('-n', dest = 'name', help = 'name on which to append the season and episode and save to disc', required = False)
+    parser.add_argument('query', type = str, help = 'A show you want to watch', nargs = "?")
+    parser.add_argument('-s', dest = 'season',type=int, help = 'season to watch')
+    parser.add_argument('-e', dest = 'episode',type=int, help = 'episode to watch')
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument('-c', dest = 'command',type=str, help = 'command to run when the video starts downloading')
+    group.add_argument('-n', dest = 'name',type=str, help = 'name on which to append the season and episode and save to disc')
     args = parser.parse_args()
     query = args.query
     season = args.season
     episode = args.episode
     command = args.command
     name = args.name
-    searchResult = OneChannel.searchSite(query)
-    for i  in range(len(searchResult)):
+    while True:
+        if not query:
+            query = raw_input("What show do you want to watch: ")
+        searchResult = OneChannel.searchSite(query)
+        if len(searchResult) == 0:
+            print "Search did not return any results."
+            query = None
+        else:
+            break
+    for i in range(len(searchResult)):
         title, link = searchResult[i]
         print "%i : %s    (%s)" % (i, title, link)
-    while True:
-        sel = raw_input("Which one do you want to watch: ")
-        if sel.isdigit():
-            selnum = int(sel)
-            if selnum >= 0 and selnum < len(searchResult):
-                break
-        print "Invalid selection"
+    selnum = getIntInput("Which one do you want to watch: ", 0, len(searchResult)-1)
     
     title, link = searchResult[selnum]
     print "Accessing show page"
     oc = OneChannel(link)
+    seasons = oc.getSeasons()
+    print "Seasons: ",seasons
+    if season and season not in seasons:
+        print "Season does not exist. Please choose another."
+        season = None
+    if not season:
+        season = getIntInput("Which season do you want to watch: ", int(min(seasons)),int(max(seasons)) )
+        #this assumes that between the min and max of the season numbers, it is completely filled. 
+        
+        
+    episodes = oc.getEpisodes(season)
+    
+    names = oc.getEpisodeNames(season)
+    for i in range(len(episodes)):
+        print episodes[i],":",names[i]
+    if episode and episode not in episodes:
+        print "Episode does not exist. Please choose another."
+        episode = None
+    if not episode:
+        #TODO: this doesn't work. Need to cast array to int to run min on it. 
+        episode = getIntInput("Which episode do you want to watch: ", int(min(episodes)),int(max(episodes)) )
+        #this assumes that between the min and max of the season numbers, it is completely filled. 
+        
+    if not command and not name:
+        saveOrRun = getIntInput("Do you want to (0) save or (1) run the episode: ", 0, 1)
+        if saveOrRun == 0:
+            name = raw_input("Save to what file?")
+        else:
+            command = raw_input("Run what program (with the file path as an argument)?:")
+      
     print "Getting host site"
     videoURL = oc.getHostSite(season, episode)
     
@@ -80,6 +111,16 @@ def main():
         atexit.register(onexit, proc = processs[0])
         while processs[0].is_alive:
             print status[0].get(True,2)
+
+def getIntInput(query, minimum,maximum):
+    while True:
+        sel = raw_input(query)
+        if sel.isdigit():
+            selnum = int(sel)
+            if selnum >= minimum and selnum <= maximum:
+                return selnum
+        print "Invalid selection"
+        
 
 
 def onexit(proc,rmFile=None):
