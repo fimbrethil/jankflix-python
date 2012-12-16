@@ -12,8 +12,8 @@ class GorillaVid(HostSite):
     '''
     classdocs
     '''
-    def getBaseUrl(self):
-        return "http://www.gorillavid.com"
+    def getName(self):
+        return "gorillavid"
 
     def getVideo(self):
         filename = self.soup.find("input", {"name":"fname", "type":"hidden"}).get("value")
@@ -39,15 +39,15 @@ class MovPod(GorillaVid):
     '''
     classdocs
     '''
-    def getBaseUrl(self):
-        return "http://www.movpod.com"
+    def getName(self):
+        return "movpod"
 
 class DaClipz(GorillaVid):
     '''
     classdocs
     '''
-    def getBaseUrl(self):
-        return "http://www.daclips.com"
+    def getName(self):
+        return "daclips"
 #gv = GorillaVid("http://gorillavid.com/5jmfrah9alxt")
 #gv = DaClipz("http://daclips.in/q31wexpl2omp")
 #gv = MovPod("http://movpod.in/aly8yr7jfw6f")

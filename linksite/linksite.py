@@ -13,10 +13,10 @@ from hostsite.hostsite import *
 
 
 
-supportedSites = [("putlocker", PutLocker()), ("sockshare", SockShare()),
-                  ("gorillavid", GorillaVid()),
-                  ("movpod", MovPod()),
-                  ("daclipz", DaClipz())]
+supportedSites = [PutLocker(),SockShare(),
+                  GorillaVid(),
+                  MovPod(),
+                  DaClipz()]
 
 
 
@@ -95,8 +95,8 @@ class LinkSite(Site):
         sites = self.getHostSiteTypes(season, episode)
         for i in range(len(sites)):
             site = sites[i]
-            for name, hs in supportedSites:
-                if name in site:
+            for hs in supportedSites:
+                if hs.getName() in site:
                     hostsiteurl = self.getHostSiteAtIndex(season, episode, i)
                     assert isinstance(hs, HostSite)
                     hs.__init__(hostsiteurl)

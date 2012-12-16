@@ -17,7 +17,8 @@ class PutLocker(HostSite):
     '''
     def getBaseUrl(self):
         return "http://www.putlocker.com"
-
+    def getName(self):
+        return "putlocker"
     def getVideo(self):
         hash = self.soup.find("input", {"name":"hash"}).get("value")
         params = {"hash":hash,
@@ -36,7 +37,8 @@ class SockShare(PutLocker):
     '''
     def getBaseUrl(self):
         return "http://www.sockshare.com"
-
+    def getName(self):
+        return "sockshare"
 #pl = PutLocker("http://www.putlocker.com/file/68EFFD1A55851B94")
 #pl = SockShare("http://www.sockshare.com/file/2CF81A42124B7657")
 #print pl.getVideo()

@@ -11,8 +11,8 @@ class MovReel(HostSite):
     '''
     classdocs
     '''
-    def getBaseUrl(self):
-        return "http://www.movreel.com"
+    def getName(self):
+        return "movreel"
 
     def getVideo(self):
         filename = self.soup.find("input", {"name":"fname", "type":"hidden" }).get("value")

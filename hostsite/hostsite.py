@@ -16,7 +16,7 @@ class HostSite(Site):
         @rtype: string
         '''
         raise NotImplementedError
-    def getBaseUrl(self):
+    def getName(self):
         '''
         @return: A string that identifies the website and one which will return true if site_url contains rval is called.
         @rtype: string
