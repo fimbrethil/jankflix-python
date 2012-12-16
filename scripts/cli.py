@@ -98,7 +98,7 @@ def main():
     videoURL = oc.getHostSite(season, episode)
     
     if name != None:
-        filename = name + "s" + season + "e" + episode + ".flv"
+        filename = name + "s" + str(season) + "e" + str(episode) + ".flv"
     else:
         filename = "video.flv"
     if command:
