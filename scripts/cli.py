@@ -9,6 +9,7 @@ import atexit
 import subprocess
 from utils import dl
 import os, sys
+import time
 sys.path.insert(0, os.path.abspath('..'))
 
 '''
@@ -38,15 +39,12 @@ def main():
     parser.add_argument('query', type = str, help = 'A show you want to watch', nargs = "?")
     parser.add_argument('-s', dest = 'season',type=int, help = 'season to watch')
     parser.add_argument('-e', dest = 'episode',type=int, help = 'episode to watch')
-    group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument('-c', dest = 'command',type=str, help = 'command to run when the video starts downloading')
-    group.add_argument('-n', dest = 'name',type=str, help = 'name on which to append the season and episode and save to disc')
+    parser.add_argument('-c', dest = 'command',type=str, help = 'command to run when the video starts downloading')
     args = parser.parse_args()
     query = args.query
     season = args.season
     episode = args.episode
     command = args.command
-    name = args.name
     while True:
         if not query:
             query = raw_input("What show do you want to watch: ")
@@ -59,52 +57,61 @@ def main():
     for i in range(len(searchResult)):
         title, link = searchResult[i]
         print "%i : %s    (%s)" % (i, title, link)
-    selnum = getIntInput("Which one do you want to watch: ", 0, len(searchResult)-1)
+    if len(searchResult) > 1:
+        selnum = getIntInput("Which one do you want to watch: ", 0, len(searchResult)-1)
+    else:
+        print "Automatically choosing %s"%(searchResult[0][0])
+        selnum = 0
     
     title, link = searchResult[selnum]
     print "Accessing show page"
     oc = OneChannel(link)
     seasons = oc.getSeasons()
-    print "Seasons: ",seasons
     if season and season not in seasons:
         print "Season does not exist. Please choose another."
         season = None
     if not season:
+        print "Seasons: ",str(seasons)[1:-1]
         season = getIntInput("Which season do you want to watch: ", int(min(seasons)),int(max(seasons)) )
         #this assumes that between the min and max of the season numbers, it is completely filled. 
-        
+    print "Selecting season %d"%(season)
         
     episodes = oc.getEpisodes(season)
     
     names = oc.getEpisodeNames(season)
-    for i in range(len(episodes)):
-        print episodes[i],":",names[i]
+    
     if episode and episode not in episodes:
         print "Episode does not exist. Please choose another."
         episode = None
     if not episode:
         #TODO: this doesn't work. Need to cast array to int to run min on it. 
+        for i in range(len(episodes)):
+            print episodes[i],":",names[i]
         episode = getIntInput("Which episode do you want to watch: ", int(min(episodes)),int(max(episodes)) )
         #this assumes that between the min and max of the season numbers, it is completely filled. 
+    print "Selecting episode %d"%(episode)
         
-    if not command and not name:
+    if not command :
         saveOrRun = getIntInput("Do you want to (0) save or (1) run the episode: ", 0, 1)
-        if saveOrRun == 0:
-            name = raw_input("Save to what file?")
-        else:
-            command = raw_input("Run what program (with the file path as an argument)?:")
+        if saveOrRun == 1:
+            command = raw_input("Run with which program? (vlc): ")
+            if command == "":
+                command = "vlc"
       
     print "Getting host site"
     hostSite = oc.chooseHostSite(season, episode)
     metadata = hostSite.getMetadata()
     videoURL = hostSite.getVideo()
-    if name != None:
-        filename = name + "." + metadata["extension"]
-    else:
-        filename = "video.flv"
+    filename = "%sS%sE%s.%s"%(query,str(season).zfill(2),str(episode).zfill(2),metadata["extension"])
     if command:
         processs,status = dl.startDownloads([(videoURL,filename)])
         atexit.register(onexit, proc = processs[0],rmFile = filename)
+        
+        for i in range(30):
+            if os.path.isfile(filename) and os.stat(filename).st_size > 1000:
+                break
+            else:
+                time.sleep(.2)
         subprocess.call([command, filename])
         processs[0].terminate()
     else:
