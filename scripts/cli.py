@@ -8,8 +8,8 @@ from linksite.onechannel import OneChannel
 import atexit
 import subprocess
 from utils import dl
-import os
-
+import os, sys
+sys.path.insert(0, os.path.abspath('..'))
 
 '''
 Functionality we want to provide:
@@ -95,10 +95,11 @@ def main():
             command = raw_input("Run what program (with the file path as an argument)?:")
       
     print "Getting host site"
-    videoURL = oc.getHostSite(season, episode)
-    
+    hostSite = oc.chooseHostSite(season, episode)
+    metadata = hostSite.getMetadata()
+    videoURL = hostSite.getVideo()
     if name != None:
-        filename = name + "s" + str(season) + "e" + str(episode) + ".flv"
+        filename = name + "." + metadata["extension"]
     else:
         filename = "video.flv"
     if command:

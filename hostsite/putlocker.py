@@ -3,7 +3,7 @@ Created on Nov 26, 2012
 
 @author: christian
 '''
-__all__ = ["PutLocker", "SockShare"]
+from utils.memoization import memoized
 from BeautifulSoup import BeautifulSoup
 from hostsite import HostSite
 from utils.utils import getAfter, getBefore
@@ -19,11 +19,23 @@ class PutLocker(HostSite):
         return "http://www.putlocker.com"
     def getName(self):
         return "putlocker"
-    def getVideo(self):
+    def getMetadata(self):
+        ret = dict()
+        
+        soup = self.getNextStep()
+        h1 = soup.find("div",{"class":"site-content"}).h1
+        ret["name"] = h1.getText()
+        ret["size"] = h1.strong.getText()
+        ret["extension"] = "flv"
+        return ret
+    @memoized
+    def getNextStep(self):
         hash = self.soup.find("input", {"name":"hash"}).get("value")
         params = {"hash":hash,
                   "confirm":"Please+wait+for+0+seconds"}
-        newsoup = BeautifulSoup(self.getPage(self.url, params))
+        return BeautifulSoup(self.getPage(self.url, params))
+    def getVideo(self):
+        newsoup = self.getNextStep()
         script = newsoup.find("div", id = "play").find("script").getText()
         script = getAfter(script, "playlist: '")
         script = getBefore(script, "',")

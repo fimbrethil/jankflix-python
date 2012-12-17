@@ -22,3 +22,9 @@ class HostSite(Site):
         @rtype: string
         '''
         raise NotImplementedError
+    def getMetadata(self):
+        '''
+        @return: A dictionary with all the metadata directly available on the website. (video size, length, quality, etc.)
+        @rtype: dict
+        '''
+        
