@@ -4,9 +4,6 @@ Created on Nov 27, 2012
 @author: christian
 '''
 import unittest
-from hostsite.gorillavid import GorillaVid
-from inspect import stack
-from hostsite.hostsite import HostSite
 
 
 class HostSiteTest():

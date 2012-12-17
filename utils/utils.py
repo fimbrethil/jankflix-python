@@ -3,9 +3,6 @@ Created on Nov 21, 2012
 
 @author: christian
 '''
-import urllib2
-__all__ = ["getAfter", "getBefore", "download"]
-import shutil
 
 
 '''

@@ -4,10 +4,10 @@ Created on Nov 20, 2012
 @author: christian
 '''
 from utils.site import Site
-from hostsite.gorillavid import *
-from hostsite.putlocker import *
-from hostsite.hostsite import *
-
+from hostsite.gorillavid import GorillaVid, MovPod, DaClipz
+from hostsite.movreel import MovReel
+from hostsite.hostsite import HostSite
+from hostsite.putlocker import PutLocker, SockShare
 
 
 
@@ -17,6 +17,7 @@ supportedSites = [PutLocker(),SockShare(),
                   GorillaVid(),
                   MovPod(),
                   DaClipz()]
+#supportedSites = [MovReel()]
 
 
 
@@ -76,7 +77,7 @@ class LinkSite(Site):
         '''
 
         raise NotImplementedError
-#    def getHostSite(self, season, episode):
+#    def chooseHostSite(self, season, episode):
 #        sites = self.getHostSiteTypes(season, episode)
 #        for i in range(len(sites)):
 #            site = sites[i]
@@ -91,7 +92,7 @@ class LinkSite(Site):
         '''
 
         raise NotImplementedError
-    def getHostSite(self, season, episode):
+    def chooseHostSite(self, season, episode):
         sites = self.getHostSiteTypes(season, episode)
         for i in range(len(sites)):
             site = sites[i]
@@ -100,7 +101,9 @@ class LinkSite(Site):
                     hostsiteurl = self.getHostSiteAtIndex(season, episode, i)
                     assert isinstance(hs, HostSite)
                     hs.__init__(hostsiteurl)
-                    return hs.getVideo()
+                    
+                    return hs
+                
 
 
 
