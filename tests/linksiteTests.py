@@ -7,7 +7,8 @@ import unittest
 from linksite.tvlinks import TVLinks
 from inspect import stack
 from linksite.onechannel import OneChannel
-
+import sys,os
+sys.path.insert(0, os.path.abspath('..'))
 class BaseLinkSiteTest():
 
     def testGetSeasons(self):
