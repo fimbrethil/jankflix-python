@@ -14,7 +14,7 @@ install_requires = [
 ]
 
 setup(name = 'jankflix',
-      version = '.9',
+      version = '.95',
       packages = find_packages(exclude = ("tests",)),
       install_requires = install_requires,
       entry_points = {
