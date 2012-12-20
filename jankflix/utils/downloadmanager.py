@@ -1,19 +1,20 @@
-'''
-Created on Doec 7, 2012
-
-@author: christian
-'''
-import urllib2
-
+from jankflix.utils.constants import USER_AGENT
 import multiprocessing
-from site import USER_AGENT
-
+import site
+import urllib2
 def startDownloads(urlPathPairs):
+    '''
+    Starts multiple downloads given many urls to download from and corresponding local paths to download to. 
+    @param urlPathPairs: a list of (url to download from, path to save to)
+    @type urlPathPairs: a list of (str, str) 
+    @return: (list of all processes started, list of statuses coming from each process) (the ith process maps to the ith status)
+    @rtype: (list of multiprocessing.Process, list of multiprocessing.Queue of strings)
+    '''
     processs = []
     status = []
     for url,path in urlPathPairs:
         mystatus = multiprocessing.Queue()
-        process = multiprocessing.Process(target = download, args = [url,path,mystatus])
+        process = multiprocessing.Process(target = download, args = [url,path,mystatus,8192*4])
         
         process.start()
         status.append(mystatus)
@@ -31,12 +32,12 @@ def download(url,path,status,block_size = 8192):
     status.put("Downloading: %s Bytes: %s" % (file_name, file_size))
     file_size_dl = 0
     while True:
-        buffer = response.read(block_size)
-        if not buffer:
+        buf = response.read(block_size)
+        if not buf:
             break
 
-        file_size_dl += len(buffer)
-        f.write(buffer)
+        file_size_dl += len(buf)
+        f.write(buf)
         status.put(r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size))
     status.put("done")
     f.close()

@@ -1,16 +1,11 @@
-'''
-Created on Nov 26, 2012
-
-@author: christian
-'''
+from jankflix.site.linksite.onechannel import OneChannel
+from jankflix.utils import downloadmanager
 import argparse
-from linksite.onechannel import OneChannel
 import atexit
+import os
 import subprocess
-from utils import dl
-import os, sys
 import time
-sys.path.insert(0, os.path.abspath('..'))
+from jankflix.site.hostsitepicker import pickFromLinkSites
 
 '''
 Functionality we want to provide:
@@ -32,9 +27,8 @@ Functionality we want to provide:
     b. Make the appropriate queries to the linksite and provide the user with the result. 
 '''
 
-
-
 def main():
+    
     parser = argparse.ArgumentParser(description = 'Jankflix - A jankier way to watch things!')
     parser.add_argument('query', type = str, help = 'A show you want to watch', nargs = "?")
     parser.add_argument('-s', dest = 'season',type=int, help = 'season to watch')
@@ -99,12 +93,12 @@ def main():
                 command = "vlc"
       
     print "Getting host site"
-    hostSite = oc.chooseHostSite(season, episode)
+    hostSite = pickFromLinkSites([oc],season, episode)
     metadata = hostSite.getMetadata()
     videoURL = hostSite.getVideo()
     filename = "%sS%sE%s.%s"%(query,str(season).zfill(2),str(episode).zfill(2),metadata["extension"])
     if command:
-        processs,status = dl.startDownloads([(videoURL,filename)])
+        processs,status = downloadmanager.startDownloads([(videoURL,filename)])
         atexit.register(onexit, proc = processs[0],rmFile = filename)
         
         for i in range(30):
@@ -115,7 +109,7 @@ def main():
         subprocess.call([command, filename])
         processs[0].terminate()
     else:
-        processs,status = dl.startDownloads([(videoURL,filename)])
+        processs,status = downloadmanager.startDownloads([(videoURL,filename)])
         atexit.register(onexit, proc = processs[0])
         while processs[0].is_alive:
             print status[0].get(True,2)
@@ -138,3 +132,21 @@ def onexit(proc,rmFile=None):
 if __name__ == '__main__':
     main()
 
+'''
+TODO:
+q-states for unresolved host-sites -> their own generic object (comes with instructions on how to resolve)
+    perhaps they check themselves if they're supported. If not remove from list. (check with import diagram for this)
+        if they don't resolve to the right address, throw an error. 
+    this lets us put them into lists, parallelize the hell out of resolving, downloading episodes, plus makes it easy to prioritize certain link sites (for load balancing) 
+    
+super-host-site/link-site -> ask host-site a query and it resolves by asking everybody 
+    when asked seasons/episodes, takes sum of all host sites info and displays.
+        if only one person claims to have it, only use their links. 
+            to do this maybe q-episodes. Then display episodes, each backed by a list of link sites advertising it
+                then when prompted, resolve to many q-hostsites
+            will need a q-episode.resolve() to q-hostsites
+            would work with existing structure for linksites. Just need to return q-episodes instead of episodes
+    remove resolve signature from linksite and somehow implement it per-linksite in the q-hostsites. 
+    still not sure how to clump search results (maybe by # seasons, # episodes per season, but that's slow)
+    maybe not super link site. Handled by q-states 
+'''

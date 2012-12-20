@@ -1,19 +1,14 @@
-'''
-Created on Nov 26, 2012
-
-@author: christian
-'''
-from linksite import LinkSite
-import urllib2
 from BeautifulSoup import BeautifulSoup
-from utils.utils import getAfter, getBefore
-import urlparse
-from utils.memoization import memoized
+from jankflix.site.template import LinkSite, Site
+from jankflix.utils import stringutils
+from jankflix.utils.decorators import memoized, unicodeToAscii
 import urllib
+import urllib2
+import urlparse
 
 class OneChannel(LinkSite):
     '''
-    classdocs
+    LinkSite implementation of 1channel.ch
     '''
     @memoized
     def getSEParts(self):
@@ -42,38 +37,38 @@ class OneChannel(LinkSite):
                 episodes.append(str(part[3]))
         intEpisodes = [int(episode) for episode in episodes]
         return intEpisodes
-
+    @unicodeToAscii
     def getEpisodeNames(self, season):
         ret = []
         for part, souppart in self.getSEParts():
             if part[1] == str(season):
-                ret.append(str(souppart.find("a").find("span").getText()))
+                ret.append(souppart.find("a").find("span").getText())
         return ret
-
+    @unicodeToAscii
     def getEpisodeURL(self, season, episode):
         for part, souppart in self.getSEParts():
             if part[1] == str(season) and part[3] == str(episode):
-                return "http://www.1channel.ch" + str(souppart.find("a").get("href"))
-
+                return "http://www.1channel.ch" + souppart.find("a").get("href")
+    @memoized
     def getEpisodeSoup(self, season, episode):
         return BeautifulSoup(OneChannel.getPage(self.getEpisodeURL(season, episode)))
-
+    @unicodeToAscii
     def getSummary(self, season, episode):
         soup = self.getEpisodeSoup(season, episode)
-        return str(soup.find("p", style = "width:460px; display:block;").getText()).strip()
-
+        return soup.find("p", style = "width:460px; display:block;").getText().strip()
+    
     def getHostSiteTypes(self, season, episode):
         sites = self.getEpisodeSoup(season, episode).findAll("span", {"class":"version_host"})
         types = []
         for site in sites:
             site = str(site.getText())
-            site = getAfter(site, "('")
-            site = getBefore(site, "')")
+            site = stringutils.getAfter(site, "('")
+            site = stringutils.getBefore(site, "')")
             types.append(site)
         return types
 
     def getHostSiteAtIndex(self, season, episode, index):
-        soup = BeautifulSoup(OneChannel.getPage(self.getEpisodeURL(season, episode)))
+        soup = self.getEpisodeSoup(season, episode)
         links = soup.findAll("span", {"class":"movie_version_link"})
         url = "http://www.1channel.ch" + links[index].find("a").get("href")
         request = urllib2.Request(url, None, self.values)
@@ -90,7 +85,7 @@ class OneChannel(LinkSite):
     @staticmethod
     def searchSite(query):
         surl = "http://www.1channel.ch/index.php"
-        soup = BeautifulSoup(OneChannel.getPage(surl))
+        soup = BeautifulSoup(Site.getPage(surl))
         key = soup.find("input", {"type":"hidden", "name":"key"}).get("value")
         params = {"search_keywords":query,
                   "key":key,

@@ -1,33 +1,29 @@
-'''
-Created on Nov 26, 2012
-
-@author: christian
-'''
-from utils.memoization import memoized
 from BeautifulSoup import BeautifulSoup
-from hostsite import HostSite
-from utils.utils import getAfter, getBefore
+from jankflix.site.template import HostSite
+from jankflix.utils import stringutils
+from jankflix.utils.decorators import memoized, unicodeToAscii
 
 
-
-
-class PutLocker(HostSite):
+class Putlocker(HostSite):
     '''
-    classdocs
+    Host site implementation of putlocker.com
     '''
     def getBaseUrl(self):
         return "http://www.putlocker.com"
-    def getName(self):
+    
+    @staticmethod
+    def getName():
         return "putlocker"
+    @unicodeToAscii
     def getMetadata(self):
-        ret = dict()
-        
+        metadata = dict()
         soup = self.getNextStep()
         h1 = soup.find("div",{"class":"site-content"}).h1
-        ret["name"] = h1.getText()
-        ret["size"] = h1.strong.getText()
-        ret["extension"] = "flv"
-        return ret
+        metadata["name"] = h1.getText()
+        metadata["size"] = h1.strong.getText()
+        metadata["extension"] = "flv"
+        return metadata
+    
     @memoized
     def getNextStep(self):
         hash = self.soup.find("input", {"name":"hash"}).get("value")
@@ -37,20 +33,18 @@ class PutLocker(HostSite):
     def getVideo(self):
         newsoup = self.getNextStep()
         script = newsoup.find("div", id = "play").find("script").getText()
-        script = getAfter(script, "playlist: '")
-        script = getBefore(script, "',")
+        script = stringutils.getAfter(script, "playlist: '")
+        script = stringutils.getBefore(script, "',")
 
         xmlsoup = BeautifulSoup(self.getPage(self.getBaseUrl() + script))
         return xmlsoup.find("media:content").get("url")
 
-class SockShare(PutLocker):
+class Sockshare(Putlocker):
     '''
-    classdocs
+    Host site implementation of sockshare.com
     '''
     def getBaseUrl(self):
         return "http://www.sockshare.com"
-    def getName(self):
+    @staticmethod
+    def getName():
         return "sockshare"
-#pl = PutLocker("http://www.putlocker.com/file/68EFFD1A55851B94")
-#pl = SockShare("http://www.sockshare.com/file/2CF81A42124B7657")
-#print pl.getVideo()

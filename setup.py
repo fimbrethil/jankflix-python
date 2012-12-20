@@ -14,11 +14,11 @@ install_requires = [
 ]
 
 setup(name = 'jankflix',
-      version = '.95',
+      version = '1.0',
       packages = find_packages(exclude = ("tests",)),
       install_requires = install_requires,
       entry_points = {
         'console_scripts': [
-            'jankflix = scripts.cli:main'
+            'jankflix = jankflix.cli.cli:main'
         ]}
       )
