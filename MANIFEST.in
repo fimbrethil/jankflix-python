@@ -1,0 +1,4 @@
+include jankflix README.md
+recursive-include jankflixmodules/cli *
+recursive-include jankflixmodules/site *
+recursive-include jankflixmodules/utils *
