@@ -1,11 +1,11 @@
-from jankflix.site.linksite.onechannel import OneChannel
-from jankflix.utils import downloadmanager
+from jankflixmodules.site.hostsitepicker import pickFromLinkSites
+from jankflixmodules.site.linksite.onechannel import OneChannel
+from jankflixmodules.utils import downloadmanager
 import argparse
 import atexit
 import os
 import subprocess
 import time
-from jankflix.site.hostsitepicker import pickFromLinkSites
 
 '''
 Functionality we want to provide:
@@ -112,7 +112,7 @@ def main():
         processs,status = downloadmanager.startDownloads([(videoURL,filename)])
         atexit.register(onexit, proc = processs[0])
         while processs[0].is_alive:
-            print status[0].get(True,2)
+            print status[0].get(True)
 
 def getIntInput(query, minimum,maximum):
     while True:

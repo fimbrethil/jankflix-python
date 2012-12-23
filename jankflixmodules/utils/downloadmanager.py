@@ -1,4 +1,4 @@
-from jankflix.utils.constants import USER_AGENT
+from jankflixmodules.utils.constants import USER_AGENT
 import multiprocessing
 import site
 import urllib2

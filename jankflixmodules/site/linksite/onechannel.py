@@ -1,7 +1,7 @@
 from BeautifulSoup import BeautifulSoup
-from jankflix.site.template import LinkSite, Site
-from jankflix.utils import stringutils
-from jankflix.utils.decorators import memoized, unicodeToAscii
+from jankflixmodules.site.template import LinkSite, Site
+from jankflixmodules.utils import stringutils
+from jankflixmodules.utils.decorators import memoized, unicodeToAscii
 import urllib
 import urllib2
 import urlparse

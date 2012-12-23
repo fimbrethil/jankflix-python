@@ -1,7 +1,7 @@
 from BeautifulSoup import BeautifulSoup
-from jankflix.site.linksite.onechannel import OneChannel
-from jankflix.site.template import LinkSite
-from jankflix.utils.decorators import unicodeToAscii, memoized
+from jankflixmodules.site.linksite.onechannel import OneChannel
+from jankflixmodules.site.template import LinkSite
+from jankflixmodules.utils.decorators import unicodeToAscii, memoized
 import urllib2
 
 class TVLinks(LinkSite):

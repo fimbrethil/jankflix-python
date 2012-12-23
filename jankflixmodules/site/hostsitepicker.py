@@ -1,5 +1,5 @@
-from jankflix.site.hostsite import *
-from jankflix.site.template import HostSite, LinkSite
+from jankflixmodules.site.hostsite import *
+from jankflixmodules.site.template import HostSite, LinkSite
 
 def allSubclasses(cls):
     return cls.__subclasses__() + [g for s in cls.__subclasses__()

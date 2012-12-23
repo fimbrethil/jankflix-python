@@ -1,5 +1,5 @@
 from BeautifulSoup import BeautifulSoup
-from jankflix.utils.constants import USER_AGENT
+from jankflixmodules.utils.constants import USER_AGENT
 import urllib
 import urllib2
 
