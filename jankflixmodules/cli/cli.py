@@ -1,4 +1,4 @@
-from jankflixmodules.site.hostsitepicker import pickFromLinkSites
+from jankflixmodules.site import hostsitepicker
 from jankflixmodules.site.linksite.onechannel import OneChannel
 from jankflixmodules.utils import downloadmanager
 import argparse
@@ -93,7 +93,7 @@ def main():
                 command = "vlc"
       
     print "Getting host site"
-    hostSite = pickFromLinkSites([oc],season, episode)
+    hostSite = hostsitepicker.pickFromLinkSites([oc],season, episode)
     metadata = hostSite.getMetadata()
     videoURL = hostSite.getVideo()
     filename = "%sS%sE%s.%s"%(query,str(season).zfill(2),str(episode).zfill(2),metadata["extension"])
