@@ -15,7 +15,6 @@ def startDownloads(urlPathPairs):
     for url,path in urlPathPairs:
         mystatus = multiprocessing.Queue()
         process = multiprocessing.Process(target = download, args = [url,path,mystatus,8192*4])
-        
         process.start()
         status.append(mystatus)
         processs.append(process)
