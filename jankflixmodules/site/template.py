@@ -36,6 +36,7 @@ class Site(object):
         response = urllib2.urlopen(request)
         res = str(response.read())
         redirected = response.geturl()
+        
         response.close()
         res = res.replace("iso-8859-1", "utf-8")
         return (res, redirected)
@@ -91,7 +92,7 @@ class LinkSite(Site):
     def getEpisodeNames(self, season):
         '''
         @param season: Season for which to get episode names
-        @return: A list of episode names
+        @return: A list of episode names, or none if no names exist. 
         @rtype: list
         '''
         raise NotImplementedError

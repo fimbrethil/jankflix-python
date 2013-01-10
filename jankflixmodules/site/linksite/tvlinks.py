@@ -3,6 +3,8 @@ from jankflixmodules.site.linksite.onechannel import OneChannel
 from jankflixmodules.site.template import LinkSite
 from jankflixmodules.utils.decorators import unicodeToAscii, memoized
 import urllib2
+from jankflixmodules import utils
+import urlparse
 
 class TVLinks(LinkSite):
     '''
@@ -12,7 +14,7 @@ class TVLinks(LinkSite):
     def getSeasons(self):
         seasons = []
         last_season = self.soup.find("div", "bg_imp biggest bold dark clear").getText()
-        seasons.append(str(last_season[7:]))
+        seasons.append(int(last_season[7:]))
         for r in self.soup.findAll("div", "bg_imp biggest bold dark clear mt_1"):
             season_num = int(r.getText()[7:8])
             seasons.append(season_num)
@@ -25,8 +27,11 @@ class TVLinks(LinkSite):
     
     @unicodeToAscii
     def getEpisodeNames(self, season):
-        episodes = self.soup.find("ul", id = "ul_snr" + str(season)).findAll("span", "c2")
-        return [ep.getText() for ep in episodes]
+        try:
+            episodes = self.soup.find("ul", id = "ul_snr" + str(season)).findAll("span", "c2")
+            return [ep.getText() for ep in episodes]
+        except:
+            return None
 
     @memoized
     def getEpisodeSoup(self, season, episode):
@@ -34,6 +39,7 @@ class TVLinks(LinkSite):
     
     @memoized
     def getEpisodeResultSoup(self, season, episode):
+        print self.url + "season_" + str(season) + "/episode_" + str(episode) + "/video-results/"
         return BeautifulSoup(self.getPage(self.url + "season_" + str(season) + "/episode_" + str(episode) + "/video-results/"))
    
     @unicodeToAscii
@@ -45,17 +51,26 @@ class TVLinks(LinkSite):
     @unicodeToAscii
     def getHostSiteTypes(self, season, episode):
         hostTypes = self.getEpisodeResultSoup(season, episode).find("ul", id = "table_search").findAll("span", "block mb_05 nowrap")
-        return [host.find("span", "dark").find("span", "bold").getText() for host in hostTypes[3:]]
+        return [host.find("span", "dark").find("span", "bold").getText() for host in hostTypes]
 
     @unicodeToAscii
-    def getHostSiteAtIndex(self, season, episode, ind):
+    def getHostSiteAtIndex(self, season, episode, index):
         resultSoup = self.getEpisodeResultSoup(season, episode)
         epElements = resultSoup.find("ul", id = "table_search").findAll("li")
-        gateLinks = [el.find("a").get("onclick")[18:38] for el in epElements]
-        url = "http://www.tv-links.eu/gateway.php?data=" + gateLinks[ind + 3]
+        gateLinks = [el.find("a").get("onclick") for el in epElements]
+        targetGateLink = gateLinks[index]
+        data = utils.stringutils.getAfter(targetGateLink, "frameLink('")
+        data = utils.stringutils.getBefore(data, "');")
+        url = "http://www.tv-links.eu/gateway.php?data=" + data
+        print url
+#        request = urllib2.Request(url, None, self.values)
+#        response = urllib2.urlopen(request)
         request = urllib2.Request(url, None, self.values)
         response = urllib2.urlopen(request)
+        parseresult = urlparse.urlparse(response.geturl())
+        print parseresult
         return response.geturl()
+    
 
     @staticmethod
     def searchSite(query):
@@ -67,3 +82,11 @@ class TVLinks(LinkSite):
         for i in range(len(titles)):
             tlTuples.append((titles[i], "http://www.tv-links.eu" + links[i]))
         return tlTuples
+
+
+#tl = TVLinks("http://www.tv-links.eu/tv-shows/The-League_13838/")
+##print tl.getHostSiteTypes(4, 12)
+##print tl.getHostSiteAtIndex(4, 12, 5)
+#request = urllib2.Request("http://www.tv-links.eu/gateway.php?data=MTM4MzhfMjEyOTIxXzQwNDMzNg==", None, tl.values)
+#response = urllib2.urlopen(request)
+#print response.geturl()

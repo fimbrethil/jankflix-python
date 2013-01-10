@@ -39,11 +39,14 @@ class OneChannel(LinkSite):
         return intEpisodes
     @unicodeToAscii
     def getEpisodeNames(self, season):
-        ret = []
-        for part, souppart in self.getSEParts():
-            if part[1] == str(season):
-                ret.append(souppart.find("a").find("span").getText())
-        return ret
+            ret = []
+            for part, souppart in self.getSEParts():
+                if part[1] == str(season):
+                    try:
+                        ret.append(souppart.find("a").find("span").getText())
+                    except:
+                        return None
+            return ret
     @unicodeToAscii
     def getEpisodeURL(self, season, episode):
         for part, souppart in self.getSEParts():

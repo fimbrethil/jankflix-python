@@ -17,6 +17,8 @@ class unicodeToAscii(object):
             for key in result.iterkeys():
                 result[key] = result[key].encode('ascii', 'ignore')
             return result
+        elif result == None:
+            return None
         else: 
             return result.encode('ascii', 'ignore')
     def __repr__(self):
