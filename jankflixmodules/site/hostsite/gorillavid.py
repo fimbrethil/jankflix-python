@@ -35,7 +35,6 @@ class Gorillavid(HostSite):
     @unicodeToAscii
     def getVideo(self):
         newsoup = self.getStep2()
-        print newsoup
         scripts = newsoup.find("div", {"id":"player_code"}).findAll("script")
         targetScriptText = scripts[2].getText()
         targetScriptPart = stringutils.getAfter(targetScriptText, 'file: "')
@@ -45,14 +44,16 @@ class Gorillavid(HostSite):
     @memoized
     def getStep2(self):
         filename = self.soup.find("input", {"name":"fname", "type":"hidden"}).get("value")
-        key = self.url.split("/")[3]
+        key = self.url.split("/")[4]
         postparams = {
             "op":"download1",
             "usr_login":"",
             "id":key,
             "fname":filename,
             "referer":"",
-            "method_free":"Free Download"
+            "channel":self.url.split("/")[3],
+            "method_free":"Free Download",
+            
         }
         return BeautifulSoup(self.getPage(self.url, postparams))
     
@@ -71,3 +72,4 @@ class Daclips(Gorillavid):
     @staticmethod
     def getName():
         return "daclips"
+
