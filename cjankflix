@@ -1,0 +1,3 @@
+#!/usr/bin/env python
+import jankflixmodules.cli.cli
+jankflixmodules.cli.cli.main()

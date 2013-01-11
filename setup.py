@@ -1,24 +1,3 @@
-#from setuptools import setup, find_packages
-#for m in ('BeautifulSoup', 'urllib', 'urllib2', 'urlparse'):
-#    try:
-#        __import__(m)
-#    except ImportError:
-#        pass
-#install_requires = [
-#    'BeautifulSoup',
-#]
-#
-#setup(name = 'jankflix',
-#      version = '1.0.1',
-#      packages = find_packages(exclude = ("tests",)),
-#      install_requires = install_requires,
-#      entry_points = {
-#        'console_scripts': [
-#            'jankflix = jankflix.cli:main'
-#        ]},
-#      author="fimbrethil",
-#      author_email="fimbrethil.wandlimb@gmail.com"
-#      )
 import os, sys, glob, fnmatch
 
 ## Added 10 Jan 2008
@@ -83,13 +62,13 @@ files = find_data_files('jankflixmodules/', '*.*')
 from distutils.core import setup
 
 setup(name = "jankflix",
-    version = "1.0.3",
+    version = "1.1.1",
     description = "Jankflix: A jankier way to watch things",
     author = "fimbrethil",
     author_email = "fimbrethil.wandlimb@gmail.com",
     url = "https://github.com/fimbrethil/jankflix-python",
     packages = ['jankflixmodules'],
-    
+    requires = ['BeautifulSoup'],
     data_files = files,
     
     ## Borrowed from wxPython too:
@@ -98,6 +77,6 @@ setup(name = "jankflix",
     cmdclass = { 'install_data':    wx_smart_install_data },
     
     #'jankflix' is in the root.
-    scripts = ["jankflix"],
+    scripts = ["jankflix","cjankflix"],
     
 )
