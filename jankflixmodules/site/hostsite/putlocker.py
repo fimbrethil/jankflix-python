@@ -26,15 +26,16 @@ class Putlocker(HostSite):
     
     @memoized
     def getNextStep(self):
-        hash = self.soup.find("input", {"name":"hash"}).get("value")
-        params = {"hash":hash,
-                  "confirm":"Please+wait+for+0+seconds"}
+        page_hash = self.soup.find("input", {"name":"hash"}).get("value")
+        params = {"hash":page_hash,
+                  "confirm":"Continue as Free User"}
         return BeautifulSoup(self.getPage(self.url, params))
+    @unicodeToAscii
     def getVideo(self):
         newsoup = self.getNextStep()
         script = newsoup.find("div", id = "play").find("script").getText()
-        script = stringutils.getAfter(script, "playlist: '")
-        script = stringutils.getBefore(script, "',")
+        script = stringutils.get_after(script, "playlist: '")
+        script = stringutils.get_before(script, "',")
 
         xmlsoup = BeautifulSoup(self.getPage(self.getBaseUrl() + script))
         return xmlsoup.find("media:content").get("url")

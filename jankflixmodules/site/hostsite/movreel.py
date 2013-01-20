@@ -21,8 +21,8 @@ class Movreel(HostSite):
         for script in scripts:
             text = script.getText()
             if len(text) > 0 and text.count("var file_name = escape('") > 0:
-                namepart = stringutils.getAfter(text, "var file_name = escape('")
-                ret["name"] = stringutils.getBefore(namepart, "');\n")
+                namepart = stringutils.get_after(text, "var file_name = escape('")
+                ret["name"] = stringutils.get_before(namepart, "');\n")
                 ret["extension"] = ret["name"][-3:]
 
         return ret
@@ -53,7 +53,7 @@ class Movreel(HostSite):
           "down_direct":1,
           }
         return BeautifulSoup(self.getPage(self.url, postparams))
-    
+    @unicodeToAscii
     def getVideo(self):
         newsoup = self.getNextStep()
         return newsoup.find("div", id = "divxshowboxt").find("a").get("href")

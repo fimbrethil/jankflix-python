@@ -2,6 +2,7 @@ from BeautifulSoup import BeautifulSoup
 from jankflixmodules.site.template import HostSite
 from jankflixmodules.utils import stringutils
 from jankflixmodules.utils.decorators import unicodeToAscii, memoized
+import urlparse
 
 class Gorillavid(HostSite):
     '''
@@ -19,17 +20,17 @@ class Gorillavid(HostSite):
             scriptText = script.getText()
             #makes sure it's the right script (there are multiple)
             if len(scriptText) > 0 and scriptText.count('var player = null;') > 0:
-                namepart = stringutils.getAfter(scriptText, 'file: "')
-                ret["name"] = stringutils.getBefore(namepart, '"')
+                namepart = stringutils.get_after(scriptText, 'file: "')
+                ret["name"] = stringutils.get_before(namepart, '"')
                 ret["extension"] = ret["name"][-3:]
-                durpart = stringutils.getAfter(scriptText, 'duration:"')
-                ret["duration"] = stringutils.getBefore(durpart, '"')
-                heightpart = stringutils.getAfter(scriptText, 'height: "')
-                ret["height"] = stringutils.getBefore(heightpart, '"')
-                widthpart = stringutils.getAfter(scriptText, 'width: "')
-                ret["width"] = stringutils.getBefore(widthpart, '"')
-                imagepart = stringutils.getAfter(scriptText, 'image: "')
-                ret["image"] = stringutils.getBefore(imagepart, '"')
+                durpart = stringutils.get_after(scriptText, 'duration:"')
+                ret["duration"] = stringutils.get_before(durpart, '"')
+                heightpart = stringutils.get_after(scriptText, 'height: "')
+                ret["height"] = stringutils.get_before(heightpart, '"')
+                widthpart = stringutils.get_after(scriptText, 'width: "')
+                ret["width"] = stringutils.get_before(widthpart, '"')
+                imagepart = stringutils.get_after(scriptText, 'image: "')
+                ret["image"] = stringutils.get_before(imagepart, '"')
         return ret
     
     @unicodeToAscii
@@ -37,14 +38,16 @@ class Gorillavid(HostSite):
         newsoup = self.getStep2()
         scripts = newsoup.find("div", {"id":"player_code"}).findAll("script")
         targetScriptText = scripts[2].getText()
-        targetScriptPart = stringutils.getAfter(targetScriptText, 'file: "')
-        targetScriptPart = stringutils.getBefore(targetScriptPart, '",')
+        targetScriptPart = stringutils.get_after(targetScriptText, 'file: "')
+        targetScriptPart = stringutils.get_before(targetScriptPart, '",')
         return targetScriptPart
 
     @memoized
     def getStep2(self):
         filename = self.soup.find("input", {"name":"fname", "type":"hidden"}).get("value")
-        key = self.url.split("/")[4]
+        parse_result = urlparse.urlparse(self.url)
+        path = parse_result.path
+        key = path.replace("/","")
         postparams = {
             "op":"download1",
             "usr_login":"",
