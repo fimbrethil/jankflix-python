@@ -1,5 +1,3 @@
-#!/usr/bin/python -d
-
 from PyQt4 import QtCore, QtGui
 from gui_gen import Ui_Form
 from jankflixmodules.site import hostsitepicker
