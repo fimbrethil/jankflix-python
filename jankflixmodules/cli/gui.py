@@ -2,7 +2,7 @@
 
 from PyQt4 import QtCore, QtGui
 from gui_gen import Ui_Form
-from jankflixmodules.site.hostsite import hostsitepicker
+from jankflixmodules.site import hostsitepicker
 from jankflixmodules.site.linksite.onechannel import OneChannel
 from jankflixmodules.site.linksite.tvlinks import TVLinks
 from jankflixmodules.utils.constants import USER_AGENT

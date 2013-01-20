@@ -1,6 +1,6 @@
+from jankflixmodules.site import hostsitepicker
 from jankflixmodules.site.linksite.onechannel import OneChannel
 from jankflixmodules.utils import downloadmanager
-from jankflixmodules.site.hostsite import hostsitepicker
 import argparse
 import atexit
 import os
