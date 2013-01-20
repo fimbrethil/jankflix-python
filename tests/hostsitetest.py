@@ -1,41 +1,33 @@
-'''
-Created on Nov 27, 2012
-
-@author: christian
-'''
 import unittest
-from inspect import stack
-from linksite.tvlinks import TVLinks
-from linksite import linksite
-from hostsite.hostsite import HostSite
+import urlparse
+from parameterizedtestcase import ParametrizedTestCase
+from jankflixmodules.site.hostsite.putlocker import Sockshare, Putlocker
+from jankflixmodules.site.hostsite.movreel import Movreel
+from jankflixmodules.site.hostsite.gorillavid import Gorillavid, Daclips, Movpod
+class TestHostSite(ParametrizedTestCase):
 
-class TestManyHostSites(unittest.TestCase):
-    @classmethod
-    
-    def setUpClass(cls):
-        search = TVLinks.searchSite("avatar")
-        l = None
-        for name, link in search:
-            if "Airbender" in name :
-                l = link
-        print l
-        cls.tl = TVLinks(l)
-        print "in " + cls.__name__ + " passed " + str(stack()[0][3])
-    def testManyHostSites(self):
-        season = 3
-        episode = 9
-        sites = self.tl.getHostSiteTypes(season, episode)
-        for i in range(len(sites)):
-            site = sites[i]
-            for hs in linksite.supportedSites:
-                if hs.getName() in site:
-                    linksite.supportedSites.remove(hs)
-                    hostsiteurl = self.tl.getHostSiteAtIndex(season, episode, i)
-                    assert isinstance(hs, HostSite)
-                    hs.__init__(hostsiteurl)
-                    print hs.getMetadata()
-                    print hs.getVideo()
-                    print "got video for " + hs.getName()
+    def testGetVideo(self):
+        video = self.param.getVideo()
+        print video
+        self.assertIsInstance(video, str, type(video))
+
+    def testGetName(self):
+        name = self.param.getName()
+        self.assertIsInstance(name, str, type(name))
+        self.assertIn(name, self.param.url, "%s in %s" % (name, self.param.url))
+
+    def testGetMetadata(self):
+        metadata = self.param.getMetadata()
+        self.assertIsInstance(metadata, dict, type(metadata))
+        self.assertIn("extension", metadata.keys(), metadata["extension"])
+
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    unittest.main()
+    suite = unittest.TestSuite()
+    suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param=Sockshare("http://www.sockshare.com/file/0A09CBFA173FCFFA")))
+    suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = Putlocker("http://www.putlocker.com/file/68EFFD1A55851B94")))
+    suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param=Movreel("http://movreel.com/vm4txj1i7m3w")))
+    suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = Gorillavid("http://gorillavid.in/v1jy9v47gq4x")))
+    suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = Gorillavid("http://gorillavid.in/n0ph9afqgr0k")))
+    suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = Daclips("http://daclips.in/q31wexpl2omp")))
+    suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = Movpod("http://movpod.in/aly8yr7jfw6f")))
+    unittest.TextTestRunner(verbosity = 2).run(suite)
