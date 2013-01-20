@@ -39,14 +39,15 @@ class OneChannel(LinkSite):
         return intEpisodes
     @unicodeToAscii
     def getEpisodeNames(self, season):
-            ret = []
-            for part, souppart in self.getSEParts():
-                if part[1] == str(season):
-                    try:
-                        ret.append(souppart.find("a").find("span").getText())
-                    except:
-                        return None
-            return ret
+        ret = []
+        for part, souppart in self.getSEParts():
+            if part[1] == str(season):
+                span = souppart.find("a").find("span")
+                if span:
+                    ret.append(span.getText())
+                else:
+                    ret.append("[name not listed]")
+        return ret
     @unicodeToAscii
     def getEpisodeURL(self, season, episode):
         for part, souppart in self.getSEParts():
@@ -65,8 +66,8 @@ class OneChannel(LinkSite):
         types = []
         for site in sites:
             site = str(site.getText())
-            site = stringutils.getAfter(site, "('")
-            site = stringutils.getBefore(site, "')")
+            site = stringutils.get_after(site, "('")
+            site = stringutils.get_before(site, "')")
             types.append(site)
         return types
 
@@ -82,7 +83,7 @@ class OneChannel(LinkSite):
             response.close()
             res = res.replace("iso-8859-1", "utf-8")
             nextSoup = BeautifulSoup(res)
-            return nextSoup.findAll("frame")[1].get("src")
+            return str(nextSoup.findAll("frame")[1].get("src"))
         return str(response.geturl())
 
     @staticmethod

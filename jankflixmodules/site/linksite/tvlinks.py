@@ -10,7 +10,13 @@ class TVLinks(LinkSite):
     '''
     LinkSite implementation of TVLinks.eu
     '''
-    
+    def __init__(self, url = None):
+        scheme, host, path, params, query, fragment =\
+            urlparse.urlparse(url)
+        if path[-1] != "/":
+            path+="/"
+            url = urlparse.urlunparse((scheme, host, path, params, query, fragment))
+        super(TVLinks, self).__init__(url)
     def getSeasons(self):
         seasons = []
         last_season = self.soup.find("div", "bg_imp biggest bold dark clear").getText()
@@ -59,8 +65,8 @@ class TVLinks(LinkSite):
         epElements = resultSoup.find("ul", id = "table_search").findAll("li")
         gateLinks = [el.find("a").get("onclick") for el in epElements]
         targetGateLink = gateLinks[index]
-        data = utils.stringutils.getAfter(targetGateLink, "frameLink('")
-        data = utils.stringutils.getBefore(data, "');")
+        data = utils.stringutils.get_after(targetGateLink, "frameLink('")
+        data = utils.stringutils.get_before(data, "');")
         url = "http://www.tv-links.eu/gateway.php?data=" + data
         print url
 #        request = urllib2.Request(url, None, self.values)
