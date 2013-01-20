@@ -2,7 +2,8 @@ import functools
 import collections
 
 class unicodeToAscii(object):
-    '''Decorator. Encodes the result of the function call as ascii, ignoring unicode characters.
+    '''Decorator. Encodes the result of the function call as ascii, 
+    ignoring unicode characters.
     '''
     def __init__(self, func):
         self.func = func

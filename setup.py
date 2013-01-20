@@ -1,7 +1,7 @@
-import os, sys, glob, fnmatch
+import os, glob, fnmatch
 
 ## Added 10 Jan 2008
-from distutils.core import setup, Extension
+from distutils.core import setup
 import distutils.command.install_data
 
 ## Code borrowed from wxPython's setup and config files
@@ -25,7 +25,7 @@ def find_data_files(srcdir, *wildcards, **kw):
     # returned in a format to be used for install_data
     ## A list of partials within a filename that would disqualify it
 ## from appearing in the tarball.
-    badnames=[".pyc","~","no_"]
+    badnames = [".pyc", "~", "no_"]
     def walk_helper(arg, dirname, files):
         if 'CVS' in dirname: ## ADD/CHANGE as you need here too.
             return
@@ -42,7 +42,7 @@ def find_data_files(srcdir, *wildcards, **kw):
                     if fnmatch.fnmatch(filename, wc_name) and not os.path.isdir(filename):
                         names.append(filename)
         if names:
-            lst.append( (dirname, names ) )
+            lst.append((dirname, names))
 
     file_list = []
     recursive = kw.get('recursive', True)
@@ -59,7 +59,6 @@ def find_data_files(srcdir, *wildcards, **kw):
 ## directories too.
 files = find_data_files('jankflixmodules/', '*.*')
 
-from distutils.core import setup
 
 setup(name = "jankflix",
     version = "1.1.1",
@@ -70,13 +69,13 @@ setup(name = "jankflix",
     packages = ['jankflixmodules'],
     requires = ['BeautifulSoup'],
     data_files = files,
-    
+
     ## Borrowed from wxPython too:
     ## Causes the data_files to be installed into the modules directory.
     ## Override some of the default distutils command classes with my own.
     cmdclass = { 'install_data':    wx_smart_install_data },
-    
+
     #'jankflix' is in the root.
-    scripts = ["jankflix","cjankflix"],
-    
+    scripts = ["jankflix", "cjankflix"],
+
 )

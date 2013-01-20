@@ -1,5 +1,5 @@
-def getAfter(string, afterThis):
-        return string[string.index(afterThis) + len(afterThis):]
+def get_after(string, after_this):
+    return string[string.index(after_this) + len(after_this):]
 
-def getBefore(string, beforeThis):
-        return string[:string.index(beforeThis)]
+def get_before(string, before_this):
+    return string[:string.index(before_this)]
