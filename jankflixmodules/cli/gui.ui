@@ -75,13 +75,6 @@
        </property>
       </widget>
      </item>
-     <item row="17" column="0" colspan="2">
-      <widget class="QLabel" name="myStatusLabel">
-       <property name="text">
-        <string>Status...</string>
-       </property>
-      </widget>
-     </item>
      <item row="13" column="0">
       <widget class="QListView" name="mySeasonListView">
        <property name="editTriggers">
@@ -183,6 +176,13 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="6" column="0" rowspan="3">
+      <widget class="QLabel" name="myStatusLabel">
+       <property name="text">
+        <string>Status...</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

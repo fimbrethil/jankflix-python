@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui.ui'
 #
-# Created: Sun Jan 20 15:04:41 2013
+# Created: Fri Jan 25 11:19:18 2013
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,9 +42,6 @@ class Ui_Form(object):
         self.myCancelPushButton.setEnabled(False)
         self.myCancelPushButton.setObjectName(_fromUtf8("myCancelPushButton"))
         self.gridLayout.addWidget(self.myCancelPushButton, 16, 1, 1, 1)
-        self.myStatusLabel = QtGui.QLabel(Form)
-        self.myStatusLabel.setObjectName(_fromUtf8("myStatusLabel"))
-        self.gridLayout.addWidget(self.myStatusLabel, 17, 0, 1, 2)
         self.mySeasonListView = QtGui.QListView(Form)
         self.mySeasonListView.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.mySeasonListView.setObjectName(_fromUtf8("mySeasonListView"))
@@ -94,6 +91,9 @@ class Ui_Form(object):
         self.myTVLinksRadioButton.setObjectName(_fromUtf8("myTVLinksRadioButton"))
         self.horizontalLayout_3.addWidget(self.myTVLinksRadioButton)
         self.gridLayout.addLayout(self.horizontalLayout_3, 5, 0, 1, 1)
+        self.myStatusLabel = QtGui.QLabel(Form)
+        self.myStatusLabel.setObjectName(_fromUtf8("myStatusLabel"))
+        self.gridLayout.addWidget(self.myStatusLabel, 6, 0, 3, 1)
         self.horizontalLayout.addLayout(self.gridLayout)
 
         self.retranslateUi(Form)
@@ -104,7 +104,6 @@ class Ui_Form(object):
         self.label_4.setText(QtGui.QApplication.translate("Form", "Search Results", None, QtGui.QApplication.UnicodeUTF8))
         self.myWatchPushButton.setText(QtGui.QApplication.translate("Form", "Watch", None, QtGui.QApplication.UnicodeUTF8))
         self.myCancelPushButton.setText(QtGui.QApplication.translate("Form", "Cancel Download", None, QtGui.QApplication.UnicodeUTF8))
-        self.myStatusLabel.setText(QtGui.QApplication.translate("Form", "Status...", None, QtGui.QApplication.UnicodeUTF8))
         self.mySavePushButton.setText(QtGui.QApplication.translate("Form", "Save", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("Form", "Episode", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("Form", "Season", None, QtGui.QApplication.UnicodeUTF8))
@@ -112,4 +111,5 @@ class Ui_Form(object):
         self.label_5.setText(QtGui.QApplication.translate("Form", "Link site to search", None, QtGui.QApplication.UnicodeUTF8))
         self.my1ChannelRadioButton.setText(QtGui.QApplication.translate("Form", "1Channel", None, QtGui.QApplication.UnicodeUTF8))
         self.myTVLinksRadioButton.setText(QtGui.QApplication.translate("Form", "TVLinks", None, QtGui.QApplication.UnicodeUTF8))
+        self.myStatusLabel.setText(QtGui.QApplication.translate("Form", "Status...", None, QtGui.QApplication.UnicodeUTF8))
 
