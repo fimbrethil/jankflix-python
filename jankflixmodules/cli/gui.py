@@ -103,11 +103,9 @@ class JankflixForm(QtGui.QWidget):
             if self.myAreResultsTvLinks:
                 self.updateStatus("Searching TVLinks for %s" % (self.myQuery))
                 self.createWebRequestThread(self.updateSearchResults, TVLinks.searchSite, self.myQuery)
-#                self.myQueryResult = TVLinks.searchSite(self.myQuery)
             else:
                 self.updateStatus("Searching OneChannel for %s" % (self.myQuery))
                 self.createWebRequestThread(self.updateSearchResults, OneChannel.searchSite, self.myQuery)
-#            self.updateStatus("Searching returned %d results. Please select one." % (len(self.myQueryResult)))
     def handleChoseResult(self):
         index = self.getFirstSelectedIndex(self.ui.myResultsListView)
         if index == None:
@@ -118,7 +116,10 @@ class JankflixForm(QtGui.QWidget):
         self.ui.myWatchPushButton.setEnabled(False)
         url = self.myQueryResult[index][1]
 #            instansiate myLinkSite with correct
-#            this avoids the condition where the radio button is changed after the fact because we are referencing myAreResultsTvLinks, rather than the radio button itself.
+#            this avoids the condition where the radio 
+#            button is changed after the fact because we 
+#            are referencing myAreResultsTvLinks, rather 
+#            than the radio button itself.
         self.updateStatus("Finding seasons. Please wait...")
         if self.myAreResultsTvLinks:
             self.myLinkSite = TVLinks(url)
