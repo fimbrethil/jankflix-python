@@ -21,7 +21,6 @@ class FileBox(HostSite):
     @unicodeToAscii
     def getVideo(self):
         newsoup = self.getStep2()
-        print newsoup
         target_div = newsoup.find("div", {"class":"getpremium_heading4"})
         return target_div.find("a").get("href")
 
