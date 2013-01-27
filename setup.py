@@ -61,7 +61,7 @@ files = find_data_files('jankflixmodules/', '*.*')
 
 
 setup(name = "jankflix",
-    version = "1.1.1",
+    version = "1.1.2",
     description = "Jankflix: A jankier way to watch things",
     author = "fimbrethil",
     author_email = "fimbrethil.wandlimb@gmail.com",
