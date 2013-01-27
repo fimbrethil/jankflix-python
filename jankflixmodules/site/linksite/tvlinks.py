@@ -69,8 +69,6 @@ class TVLinks(LinkSite):
         data = utils.stringutils.get_before(data, "');")
         url = "http://www.tv-links.eu/gateway.php?data=" + data
         print url
-#        request = urllib2.Request(url, None, self.values)
-#        response = urllib2.urlopen(request)
         request = urllib2.Request(url, None, self.values)
         response = urllib2.urlopen(request)
         parseresult = urlparse.urlparse(response.geturl())
@@ -82,17 +80,17 @@ class TVLinks(LinkSite):
     def searchSite(query):
         surl = "http://www.tv-links.eu/_search/?s=" + query
         resultSoup = BeautifulSoup(OneChannel.getPage(surl))
-        titles = [str(res.getText()) for res in resultSoup.findAll("span", "biggest bold")]
-        links = [str(res.get("href")) for res in resultSoup.findAll("a", "outer list cfix")]
+        
         tlTuples = []
-        for i in range(len(titles)):
-            tlTuples.append((titles[i], "http://www.tv-links.eu" + links[i]))
+        for search_result in resultSoup.findAll("a","outer list cfix"):
+            meta_data = search_result.find("span","block x3")
+            category = None
+            for span in meta_data.findAll("span","dark"):
+                if("Category" in span.getText()):
+                    category = str(span.nextSibling)
+            if "TV" in category:
+                link = "http://www.tv-links.eu" + search_result.get("href")
+                title = search_result.find("span", "biggest bold").getText()
+                tlTuples.append((str(title), str(link)))
         return tlTuples
 
-
-#tl = TVLinks("http://www.tv-links.eu/tv-shows/The-League_13838/")
-##print tl.getHostSiteTypes(4, 12)
-##print tl.getHostSiteAtIndex(4, 12, 5)
-#request = urllib2.Request("http://www.tv-links.eu/gateway.php?data=MTM4MzhfMjEyOTIxXzQwNDMzNg==", None, tl.values)
-#response = urllib2.urlopen(request)
-#print response.geturl()
