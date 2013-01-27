@@ -5,6 +5,7 @@ from jankflixmodules.utils.decorators import unicodeToAscii, memoized
 import urllib2
 from jankflixmodules import utils
 import urlparse
+from jankflixmodules.utils import stringutils
 
 class TVLinks(LinkSite):
     '''
@@ -45,7 +46,6 @@ class TVLinks(LinkSite):
     
     @memoized
     def getEpisodeResultSoup(self, season, episode):
-        print self.url + "season_" + str(season) + "/episode_" + str(episode) + "/video-results/"
         return BeautifulSoup(self.getPage(self.url + "season_" + str(season) + "/episode_" + str(episode) + "/video-results/"))
    
     @unicodeToAscii
@@ -57,7 +57,8 @@ class TVLinks(LinkSite):
     @unicodeToAscii
     def getHostSiteTypes(self, season, episode):
         hostTypes = self.getEpisodeResultSoup(season, episode).find("ul", id = "table_search").findAll("span", "block mb_05 nowrap")
-        return [host.find("span", "dark").find("span", "bold").getText() for host in hostTypes]
+        host_sites_with_visit  = [host.find("span", "bigger bold underline").getText() for host in hostTypes]
+        return [host_site.replace("Visit ","") for host_site in host_sites_with_visit]
 
     @unicodeToAscii
     def getHostSiteAtIndex(self, season, episode, index):
@@ -68,11 +69,9 @@ class TVLinks(LinkSite):
         data = utils.stringutils.get_after(targetGateLink, "frameLink('")
         data = utils.stringutils.get_before(data, "');")
         url = "http://www.tv-links.eu/gateway.php?data=" + data
-        print url
         request = urllib2.Request(url, None, self.values)
         response = urllib2.urlopen(request)
         parseresult = urlparse.urlparse(response.geturl())
-        print parseresult
         return response.geturl()
     
 
