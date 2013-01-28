@@ -5,6 +5,7 @@ from jankflixmodules.site.hostsite.putlocker import Sockshare, Putlocker
 from jankflixmodules.site.hostsite.movreel import Movreel
 from jankflixmodules.site.hostsite.gorillavid import Gorillavid, Daclips, Movpod
 from jankflixmodules.site.hostsite.filebox import FileBox
+from jankflixmodules.site.hostsite.filenuke import FileNuke
 class TestHostSite(ParametrizedTestCase):
 
     def testGetVideo(self):
@@ -32,4 +33,5 @@ if __name__ == "__main__":
     suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = Daclips("http://daclips.in/q31wexpl2omp")))
     suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = Movpod("http://movpod.in/aly8yr7jfw6f")))
     suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = FileBox("http://www.filebox.com/pv78hy1iqqem")))
+    suite.addTest(ParametrizedTestCase.parametrize(TestHostSite, param = FileNuke("http://filenuke.com/3b6c44atsjky")))
     unittest.TextTestRunner(verbosity = 2).run(suite)
