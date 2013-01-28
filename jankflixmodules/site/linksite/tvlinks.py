@@ -20,8 +20,10 @@ class TVLinks(LinkSite):
         super(TVLinks, self).__init__(url)
     def getSeasons(self):
         seasons = []
-        last_season = self.soup.find("div", "bg_imp biggest bold dark clear").getText()
-        seasons.append(int(last_season[7:]))
+        last_season_dirty = str(self.soup.find("div", "bg_imp biggest bold dark clear").getText())
+        last_season_dirty = last_season_dirty.replace("- show episodes","")
+        last_season = int(last_season_dirty.replace("Season","").strip())
+        seasons.append(last_season)
         for r in self.soup.findAll("div", "bg_imp biggest bold dark clear mt_1"):
             season_num = int(r.getText()[7:8])
             seasons.append(season_num)
