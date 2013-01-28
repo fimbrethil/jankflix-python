@@ -66,9 +66,10 @@ class TestLinkSite(ParametrizedTestCase):
         #get the (0) index of the last host site
         index = len(host_site_types)-1
         #attempt to resolve it to a host site url
-        host_site = self.param.getHostSiteAtIndex(season,episode,index)
-        self.assertIsInstance(host_site,str,type(host_site))
-        self.assertGreater(len(host_site), 0,len(host_site))
+        if index >= 0:
+            host_site = self.param.getHostSiteAtIndex(season,episode,index)
+            self.assertIsInstance(host_site,str,type(host_site))
+            self.assertGreater(len(host_site), 0,len(host_site))
         
         
         '''
@@ -83,4 +84,6 @@ if __name__ == "__main__":
     suite = unittest.TestSuite()
     suite.addTest(ParametrizedTestCase.parametrize(TestLinkSite, param=OneChannel("http://www.1channel.ch/watch-9583-Avatar-The-Last-Airbender")))
     suite.addTest(ParametrizedTestCase.parametrize(TestLinkSite, param=TVLinks("http://www.tv-links.eu/tv-shows/Avatar--The-Last-Airbender_76/")))
+    suite.addTest(ParametrizedTestCase.parametrize(TestLinkSite, param=TVLinks("http://www.tv-links.eu/tv-shows/Game-of-Thrones--_25243/")))
+
     unittest.TextTestRunner(verbosity=2).run(suite)
