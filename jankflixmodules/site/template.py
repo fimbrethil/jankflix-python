@@ -66,6 +66,19 @@ class HostSite(Site):
     def getMetadata(self):
         '''
         @return: A dictionary with all the metadata directly available on the website. (video size, length, quality, etc.)
+        Keys currently in use on one or more host site implementations are:
+        extension
+        summary
+        size
+        views
+        video_info
+        audio_info
+        name
+        extension
+        duration
+        height
+        width
+        image
         @rtype: dict
         '''
         return NotImplementedError
