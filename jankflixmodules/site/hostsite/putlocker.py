@@ -26,10 +26,11 @@ class Putlocker(HostSite):
     
     @memoized
     def getNextStep(self):
-        page_hash = self.soup.find("input", {"name":"hash"}).get("value")
-        params = {"hash":page_hash,
-                  "confirm":"Continue as Free User"}
-        return BeautifulSoup(self.getPage(self.url, params))
+        form = self.soup.find("form",method="post")
+        button = self.soup.find("input", type="submit")
+        name = str(button.get("name"))
+        value = str(button.get("value"))
+        return self.submitPostRequest(form, (name,value))
     @unicodeToAscii
     def getVideo(self):
         newsoup = self.getNextStep()

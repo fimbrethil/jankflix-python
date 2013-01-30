@@ -2,7 +2,6 @@ from BeautifulSoup import BeautifulSoup
 from jankflixmodules.site.template import HostSite
 from jankflixmodules.utils import stringutils
 from jankflixmodules.utils.decorators import unicodeToAscii, memoized
-import urlparse
 
 class Gorillavid(HostSite):
     '''
@@ -44,21 +43,8 @@ class Gorillavid(HostSite):
 
     @memoized
     def getStep2(self):
-        filename = self.soup.find("input", {"name":"fname", "type":"hidden"}).get("value")
-        parse_result = urlparse.urlparse(self.url)
-        path = parse_result.path
-        key = path.replace("/","")
-        postparams = {
-            "op":"download1",
-            "usr_login":"",
-            "id":key,
-            "fname":filename,
-            "referer":"",
-            "channel":self.url.split("/")[3],
-            "method_free":"Free Download",
-            
-        }
-        return BeautifulSoup(self.getPage(self.url, postparams))
+        form = self.soup.find("form", method="POST")        
+        return self.submitPostRequest(form)
     
 class Movpod(Gorillavid):
     '''

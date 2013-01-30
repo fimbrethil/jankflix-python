@@ -29,30 +29,12 @@ class Movreel(HostSite):
     
     @memoized
     def getNextStep(self):
-        filename = self.soup.find("input", {"name":"fname", "type":"hidden" }).get("value")
-        key = self.url.split("/")[3]
-        print filename, key
-        postparams = {
-          "op":"download1",
-          "usr_login":"",
-          "id":key,
-          "fname":filename,
-          "referer":"",
-          "channel":"cnb",
-          "method_free":"Free Download",
-          }
-
-        newsoup = BeautifulSoup(self.getPage(self.url, postparams))
-        rand = newsoup.find("input", {"name":"rand", "type":"hidden"}).get("value")
-        postparams = {
-          "op":"download2",
-          "id":key,
-          "rand":rand,
-          "method_free":"Free Download",
-          "method_premium":"",
-          "down_direct":1,
-          }
-        return BeautifulSoup(self.getPage(self.url, postparams))
+        form = self.soup.find("form", method="POST")
+        extra = form.find("input", type="submit")
+        extra_tuple = (str(extra.get("name")), str(extra.get("value")))
+        newsoup = self.submitPostRequest(form, extra_tuple)
+        form = newsoup.find("form", {"name":"F1","method":"POST"})
+        return self.submitPostRequest(form)
     @unicodeToAscii
     def getVideo(self):
         newsoup = self.getNextStep()

@@ -1,4 +1,4 @@
-from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulSoup, Tag
 from jankflixmodules.utils.constants import USER_AGENT
 import urllib
 import urllib2
@@ -20,6 +20,7 @@ class Site(object):
         if postParams == None:
             request = urllib2.Request(url, postParams, values)
         else:
+            print "requesting with params:",str(urllib.urlencode(postParams))
             request = urllib2.Request(url, urllib.urlencode(postParams), values)
         response = urllib2.urlopen(request)
         res = str(response.read())
@@ -40,8 +41,25 @@ class Site(object):
         response.close()
         res = res.replace("iso-8859-1", "utf-8")
         return (res, redirected)
-
-
+    def submitPostRequest(self, formSoup, extra = None):
+        assert isinstance(formSoup, Tag)
+        if extra:
+            assert isinstance(extra, tuple) 
+            assert len(extra) == 2
+            assert isinstance(extra[0], str)
+            assert isinstance(extra[1], str)
+        inputs = formSoup.findAll("input", type="hidden")
+        if extra:
+            postparams = dict([extra])
+        else:
+            postparams = dict()
+        for input in inputs:
+            name = str(input.get("name"))
+            value = str(input.get("value"))
+            print name,value
+            postparams[name] = value
+        
+        return BeautifulSoup(self.getPage(self.url, postparams))
 
 
 class HostSite(Site):

@@ -1,4 +1,3 @@
-from BeautifulSoup import BeautifulSoup
 from jankflixmodules.site.template import HostSite
 from jankflixmodules.utils.decorators import unicodeToAscii, memoized
 from jankflixmodules.utils import stringutils
@@ -51,21 +50,8 @@ class FileNuke(HostSite):
     @memoized
     def getStep2(self):
         form = self.soup.find("tr")
-        op = form.find("input", {"name":"op","type":"hidden"}).get("value")
-        usr_login = form.find("input", {"name":"usr_login","type":"hidden"}).get("value")
-        id = form.find("input", {"name":"id","type":"hidden"}).get("value")
-        fname = form.find("input", {"name":"fname","type":"hidden"}).get("value")
-        referer = form.find("input", {"name":"referer", "type":"hidden"}).get("value")
-        method_free = form.find("input", {"name":"method_free"}).get("value")
-        postparams = {
-            "op":op,
-            "usr_login":usr_login,
-            "id":id,
-            "fname":fname,
-            "referer":referer,
-            "method_free":method_free,
-        }
-        
-        print postparams
-        return BeautifulSoup(self.getPage(self.url, postparams))
+        method_free = form.find("input", {"name":"method_free"})
+        name = str(method_free.get("name"))
+        value = str(method_free.get("value"))
+        return self.submitPostRequest(form, (name,value))
 
