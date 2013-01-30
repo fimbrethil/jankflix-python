@@ -1,5 +1,6 @@
 from jankflixmodules.site.hostsite import *
 from jankflixmodules.site.template import HostSite, LinkSite
+from jankflixmodules.utils import webutils
 
 def allSubclasses(cls):
     return cls.__subclasses__() + [g for s in cls.__subclasses__()
@@ -34,7 +35,7 @@ def verifyGoodHostSite(host_site):
     try:
         videoLink = host_site.getVideo()
         print videoLink + " is video link"
-        if len(videoLink) == 0:
+        if len(videoLink) == 0 or not webutils.exists(videoLink):
             return False
         return True
     except Exception as inst:
