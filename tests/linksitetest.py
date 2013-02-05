@@ -80,10 +80,14 @@ class TestLinkSite(ParametrizedTestCase):
         @rtype: string
         '''
    
+def generateTests():
+    tests = []
+    tests.append(ParametrizedTestCase.parametrize(TestLinkSite, param=OneChannel("http://www.1channel.ch/watch-9583-Avatar-The-Last-Airbender")))
+    tests.append(ParametrizedTestCase.parametrize(TestLinkSite, param=TVLinks("http://www.tv-links.eu/tv-shows/Avatar--The-Last-Airbender_76/")))
+    tests.append(ParametrizedTestCase.parametrize(TestLinkSite, param=TVLinks("http://www.tv-links.eu/tv-shows/Game-of-Thrones--_25243/")))
+    return tests
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    suite.addTest(ParametrizedTestCase.parametrize(TestLinkSite, param=OneChannel("http://www.1channel.ch/watch-9583-Avatar-The-Last-Airbender")))
-    suite.addTest(ParametrizedTestCase.parametrize(TestLinkSite, param=TVLinks("http://www.tv-links.eu/tv-shows/Avatar--The-Last-Airbender_76/")))
-    suite.addTest(ParametrizedTestCase.parametrize(TestLinkSite, param=TVLinks("http://www.tv-links.eu/tv-shows/Game-of-Thrones--_25243/")))
-
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    for test in generateTests():
+        suite.addTest(test)    
+    unittest.TextTestRunner(verbosity = 2).run(suite)

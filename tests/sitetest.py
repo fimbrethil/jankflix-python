@@ -1,31 +1,15 @@
-import unittest
-import urlparse
-from parameterizedtestcase import ParametrizedTestCase
-from jankflixmodules.site.hostsite.putlocker import Sockshare, Putlocker
-from jankflixmodules.site.hostsite.movreel import Movreel
-from jankflixmodules.site.hostsite.gorillavid import Gorillavid, Daclips, Movpod
-from jankflixmodules.site.hostsite.filebox import FileBox
-from jankflixmodules.site.hostsite.filenuke import FileNuke
-class TestHostSite(ParametrizedTestCase):
+from tests.parameterizedtestcase import ParametrizedTestCase
+from jankflixmodules.site import hostsitepicker
+class TestHostSitePicker(ParametrizedTestCase):
 
-    def testGetVideo(self):
-        video = self.param.getVideo()
-        print video
+    def testIsSupportedHostSite(self):
+        self.assert_(hostsitepicker.isSupportedHostSite("putlocker"),"putlocker is supported hostsite")
         self.assertIsInstance(video, str, type(video))
 
-    def testGetName(self):
-        name = self.param.getName()
-        self.assertIsInstance(name, str, type(name))
-        self.assertIn(name, self.param.url, "%s in %s" % (name, self.param.url))
-
-    def testGetMetadata(self):
-        metadata = self.param.getMetadata()
-        self.assertIsInstance(metadata, dict, type(metadata))
-        self.assertIn("extension", metadata.keys(), metadata["extension"])
-
+    
 def generateTests():
     tests = []
-    tests.append(ParametrizedTestCase.parametrize(TestHostSite, param = Sockshare("http://www.sockshare.com/file/0A09CBFA173FCFFA")))
+    tests.append(ParametrizedTestCase.parametrize(TestHostSite, param = None)
     tests.append(ParametrizedTestCase.parametrize(TestHostSite, param = Putlocker("http://www.putlocker.com/file/68EFFD1A55851B94")))
 
     tests.append(ParametrizedTestCase.parametrize(TestHostSite, param = Movreel("http://movreel.com/vm4txj1i7m3w")))
