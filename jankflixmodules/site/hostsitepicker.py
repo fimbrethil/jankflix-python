@@ -7,13 +7,16 @@ def allSubclasses(cls):
                                    for g in allSubclasses(s)]
     
 def isSupportedHostSite(host_site_type):
+    assert isinstance(host_site_type, str)
     for host_site in allSubclasses(HostSite):
         if host_site.getName() in host_site_type:
             return host_site
 
 def pickFromLinkSite(link_site,season,episode):
-    types = link_site.getHostSiteTypes(season, episode)
     assert isinstance(link_site, LinkSite)
+    assert isinstance(season, int)
+    assert isinstance(episode, int)
+    types = link_site.getHostSiteTypes(season, episode)
     for host_site_type in types:
         print "trying " + host_site_type
         host_site_object = isSupportedHostSite(host_site_type)
@@ -29,7 +32,6 @@ def pickFromLinkSite(link_site,season,episode):
                 print "host site bad"
     print "No host sites found"
 def verifyGoodHostSite(host_site):
-    print host_site.__class__
     assert isinstance(host_site, HostSite)
     print host_site.url
     try:
@@ -38,6 +40,8 @@ def verifyGoodHostSite(host_site):
         if len(videoLink) == 0 or not webutils.exists(videoLink):
             return False
         return True
+    #want to catch all excpetions here and fail silently
+    #so pickFrmoHostSiteTypes will failover to the next host site. 
     except Exception as inst:
         print type(inst)     # the exception instance
         print inst.args      # arguments stored in .args
