@@ -20,24 +20,24 @@ class TVLinks(LinkSite):
         super(TVLinks, self).__init__(url)
     def getSeasons(self):
         seasons = []
-        last_season_dirty = str(self.soup.find("div", "bg_imp biggest bold dark clear").getText())
+        last_season_dirty = str(self.getSoup().find("div", "bg_imp biggest bold dark clear").getText())
         last_season_dirty = last_season_dirty.replace("- show episodes","")
         last_season = int(last_season_dirty.replace("Season","").strip())
         seasons.append(last_season)
-        for r in self.soup.findAll("div", "bg_imp biggest bold dark clear mt_1"):
+        for r in self.getSoup().findAll("div", "bg_imp biggest bold dark clear mt_1"):
             season_num = int(r.getText()[7:8])
             seasons.append(season_num)
         return seasons
 
     
     def getEpisodes(self, season):
-        episodes = self.soup.find("ul", id = "ul_snr" + str(season)).findAll("span", "c1")
+        episodes = self.getSoup().find("ul", id = "ul_snr" + str(season)).findAll("span", "c1")
         return [int(ep.getText()[8:]) for ep in episodes]
     
     @unicodeToAscii
     def getEpisodeNames(self, season):
         try:
-            episodes = self.soup.find("ul", id = "ul_snr" + str(season)).findAll("span", "c2")
+            episodes = self.getSoup().find("ul", id = "ul_snr" + str(season)).findAll("span", "c2")
             return [ep.getText() for ep in episodes]
         except:
             return None

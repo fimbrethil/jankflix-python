@@ -26,8 +26,8 @@ class Putlocker(HostSite):
     
     @memoized
     def getNextStep(self):
-        form = self.soup.find("form",method="post")
-        button = self.soup.find("input", type="submit")
+        form = self.getSoup().find("form",method="post")
+        button = self.getSoup().find("input", type="submit")
         name = str(button.get("name"))
         value = str(button.get("value"))
         return self.submitPostRequest(form, (name,value))

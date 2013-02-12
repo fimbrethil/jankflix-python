@@ -2,6 +2,7 @@ from BeautifulSoup import BeautifulSoup, Tag
 from jankflixmodules.utils.constants import USER_AGENT
 import urllib
 import urllib2
+from jankflixmodules.utils.decorators import memoized
 
 
 class Site(object):
@@ -10,10 +11,13 @@ class Site(object):
     '''
     def __init__(self, url = None):
         if url != None:
-            page, newUrl = Site.getPageWithRedirectedURL(url)
-            self.soup = BeautifulSoup(page)
-            self.url = newUrl
+            self.url = url
             self.values = {'User-Agent' : USER_AGENT}
+    @memoized
+    def getSoup(self):
+        page, newUrl = Site.getPageWithRedirectedURL(self.url)
+        self.url = newUrl
+        return BeautifulSoup(page)
     @staticmethod
     def getPage(url, postParams = None):
         values = {'User-Agent' : USER_AGENT}

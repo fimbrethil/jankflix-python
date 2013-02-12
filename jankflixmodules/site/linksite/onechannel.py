@@ -12,7 +12,7 @@ class OneChannel(LinkSite):
     '''
     @memoized
     def getSEParts(self):
-        items = self.soup.findAll("div", {"class":"tv_episode_item"})
+        items = self.getSoup().findAll("div", {"class":"tv_episode_item"})
         ret = []
         for item in items:
 

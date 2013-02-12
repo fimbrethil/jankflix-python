@@ -29,7 +29,7 @@ class Movreel(HostSite):
     
     @memoized
     def getNextStep(self):
-        form = self.soup.find("form", method="POST")
+        form = self.getSoup().find("form", method="POST")
         extra = form.find("input", type="submit")
         extra_tuple = (str(extra.get("name")), str(extra.get("value")))
         newsoup = self.submitPostRequest(form, extra_tuple)

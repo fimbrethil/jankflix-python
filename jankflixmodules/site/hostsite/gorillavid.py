@@ -43,7 +43,7 @@ class Gorillavid(HostSite):
 
     @memoized
     def getStep2(self):
-        form = self.soup.find("form", method="POST")        
+        form = self.getSoup().find("form", method="POST")        
         return self.submitPostRequest(form)
     
 class Movpod(Gorillavid):

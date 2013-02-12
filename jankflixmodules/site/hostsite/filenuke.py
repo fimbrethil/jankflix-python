@@ -49,7 +49,7 @@ class FileNuke(HostSite):
 
     @memoized
     def getStep2(self):
-        form = self.soup.find("tr")
+        form = self.getSoup().find("tr")
         method_free = form.find("input", {"name":"method_free"})
         name = str(method_free.get("name"))
         value = str(method_free.get("value"))
