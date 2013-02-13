@@ -9,6 +9,7 @@ import subprocess
 import sys
 import time
 import urllib2
+import types
 
 class JankflixForm(QtGui.QWidget):
     def __init__(self, parent = None):
@@ -32,6 +33,9 @@ class JankflixForm(QtGui.QWidget):
         else:
             self.myAreResultsTvLinks = False
     def createDownloadThread(self, url, path):
+        assert isinstance(url ,str)
+        assert isinstance(path ,str)
+        
         workThread = WorkThread(self, url, path)
         self.connect(workThread, workThread.statusSignal, self.ui.myStatusLabel.setText)
         self.connect(workThread, workThread.progressSignal, self.ui.myProgressBar.setValue)
@@ -40,6 +44,12 @@ class JankflixForm(QtGui.QWidget):
         self.ui.myCancelPushButton.clicked.connect(workThread.terminate)
         return workThread
     def createWebRequestThread(self, updateMethod, httpMethod, *args):
+        #the or is because both updateMethod and httpMethod can be either methods specified in the class
+        #or lambdas specified in the calling method 
+        assert isinstance(updateMethod , types.FunctionType) or isinstance(updateMethod , types.MethodType)
+        assert isinstance(httpMethod , types.FunctionType) or isinstance(httpMethod , types.MethodType)
+        assert isinstance(args , tuple)
+        
         if self.myWebRequestThread != None:
             self.myWebRequestThread.terminate()
         wrThread = WebRequestThread(self, httpMethod, *args)
@@ -49,6 +59,14 @@ class JankflixForm(QtGui.QWidget):
 
 
     def updateSearchResults(self, runQueryResult):
+        assert isinstance(runQueryResult , list)
+        assert len(runQueryResult) > 0
+        for result in runQueryResult:
+            assert isinstance(result, tuple)
+            assert len(result) == 2
+            assert isinstance(result[0], str)
+            assert isinstance(result[1], str)
+        
         data = [name_url[0] for name_url in runQueryResult]
         self.updateListView(data, self.ui.myResultsListView)
         self.myQueryResult = runQueryResult
@@ -57,22 +75,31 @@ class JankflixForm(QtGui.QWidget):
             index = self.ui.myResultsListView.model().index(0,0);
             self.ui.myResultsListView.setCurrentIndex(index)
             self.handleChoseResult()
-    def updateListView(self, data, listView):
+    def updateListView(self, data, listview):
+        assert isinstance(listview , QtGui.QListView)
+        assert isinstance(data , list)
+        assert len(data) > 0
+        
         model = QtGui.QStandardItemModel()
         for datum in data:
             item = QtGui.QStandardItem(str(datum))
             model.appendRow(item)
-        listView.setModel(model)
+        listview.setModel(model)
     def updateStatus(self, status):
+        assert isinstance(status , str)
+        
         self.ui.myStatusLabel.setText(status)
     def getFirstSelectedIndex(self, listview):
         assert isinstance(listview , QtGui.QListView)
+        
         indecies = listview.selectedIndexes()
         if len(indecies) > 0:
             #gets the row of the selected value
             resultIndex = indecies[0].row()
             return resultIndex
     def getFirstSelectedItem(self, listview):
+        assert isinstance(listview , QtGui.QListView)
+        
         index = self.getFirstSelectedIndex(listview)
         print "first selected index returns %d" % (index)
         if index != None:
@@ -82,15 +109,17 @@ class JankflixForm(QtGui.QWidget):
 
 
     def handleRadioButton(self, whichButton):
-            self.ui.myResultsListView.setModel(QtGui.QStandardItemModel())
-            self.ui.mySeasonListView.setModel(QtGui.QStandardItemModel())
-            self.ui.myEpisodeListView.setModel(QtGui.QStandardItemModel())
-            self.ui.mySavePushButton.setEnabled(False)
-            self.ui.myWatchPushButton.setEnabled(False)
-            if whichButton == "tvlinks":
-                self.myAreResultsTvLinks = True
-            else:
-                self.myAreResultsTvLinks = False
+        assert isinstance(whichButton , str)
+        
+        self.ui.myResultsListView.setModel(QtGui.QStandardItemModel())
+        self.ui.mySeasonListView.setModel(QtGui.QStandardItemModel())
+        self.ui.myEpisodeListView.setModel(QtGui.QStandardItemModel())
+        self.ui.mySavePushButton.setEnabled(False)
+        self.ui.myWatchPushButton.setEnabled(False)
+        if whichButton == "tvlinks":
+            self.myAreResultsTvLinks = True
+        else:
+            self.myAreResultsTvLinks = False
     def handleRunQuery(self):
         self.myQuery = str(self.ui.mySearchLineEdit.text())
         if len(self.myQuery) > 0:
@@ -135,7 +164,7 @@ class JankflixForm(QtGui.QWidget):
             self.ui.myEpisodeListView.setModel(QtGui.QStandardItemModel())
             self.ui.mySavePushButton.setEnabled(False)
             self.ui.myWatchPushButton.setEnabled(False)
-            self.mySeasonChosen = item.text()
+            self.mySeasonChosen = int(item.text())
             self.updateEpisodes()
 
     def updateEpisodes(self):
@@ -156,7 +185,7 @@ class JankflixForm(QtGui.QWidget):
     def handleChoseEpisode(self):
         item = self.getFirstSelectedItem(self.ui.myEpisodeListView)
         if item:
-            self.myEpisodeChosen = str(item.accessibleDescription())
+            self.myEpisodeChosen = int(item.accessibleDescription())
             self.ui.mySavePushButton.setEnabled(True)
             self.ui.myWatchPushButton.setEnabled(True)
 
@@ -196,6 +225,8 @@ class JankflixForm(QtGui.QWidget):
             self.updateStatus("Couldn't pick a host site. Try a different link site.")
 
     def waitForFile(self, filename):
+        assert isinstance(filename, str)
+        
         self.updateStatus("Waiting for file to start downloading...")
         for _ in range(50):
             if os.path.isfile(filename):

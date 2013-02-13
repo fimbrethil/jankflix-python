@@ -31,14 +31,18 @@ class OneChannel(LinkSite):
         return intSeasons
 
     def getEpisodes(self, season):
+        assert isinstance(season, int)
+        
         episodes = []
         for part, souppart in self.getSEParts():
             if part[1] == str(season):
                 episodes.append(str(part[3]))
         intEpisodes = [int(episode) for episode in episodes]
         return intEpisodes
+    
     @unicodeToAscii
     def getEpisodeNames(self, season):
+        assert isinstance(season, int)
         ret = []
         for part, souppart in self.getSEParts():
             if part[1] == str(season):
@@ -48,20 +52,35 @@ class OneChannel(LinkSite):
                 else:
                     ret.append("[name not listed]")
         return ret
+    
     @unicodeToAscii
     def getEpisodeURL(self, season, episode):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        
         for part, souppart in self.getSEParts():
             if part[1] == str(season) and part[3] == str(episode):
                 return "http://www.1channel.ch" + souppart.find("a").get("href")
+            
     @memoized
     def getEpisodeSoup(self, season, episode):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        
         return BeautifulSoup(OneChannel.getPage(self.getEpisodeURL(season, episode)))
+    
     @unicodeToAscii
     def getSummary(self, season, episode):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        
         soup = self.getEpisodeSoup(season, episode)
         return soup.find("p", style = "width:460px; display:block;").getText().strip()
-    
+
     def getHostSiteTypes(self, season, episode):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        
         sites = self.getEpisodeSoup(season, episode).findAll("span", {"class":"version_host"})
         types = []
         for site in sites:
@@ -72,6 +91,10 @@ class OneChannel(LinkSite):
         return types
 
     def getHostSiteAtIndex(self, season, episode, index):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        assert isinstance(index, int)
+        
         soup = self.getEpisodeSoup(season, episode)
         links = soup.findAll("span", {"class":"movie_version_link"})
         url = "http://www.1channel.ch" + links[index].find("a").get("href")
@@ -88,6 +111,8 @@ class OneChannel(LinkSite):
 
     @staticmethod
     def searchSite(query):
+        assert isinstance(query, str)
+        
         surl = "http://www.1channel.ch/index.php"
         soup = BeautifulSoup(Site.getPage(surl))
         key = soup.find("input", {"type":"hidden", "name":"key"}).get("value")
@@ -103,4 +128,3 @@ class OneChannel(LinkSite):
             a = result.find("a")
             ret.append((str(a.get("title")), "http://www.1channel.ch" + str(a.get("href"))))
         return ret
-

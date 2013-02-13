@@ -1,11 +1,19 @@
 import re
 def get_after(string, after_this):
+    assert isinstance(string, str) or isinstance(string, unicode)
+    assert isinstance(after_this, str) or isinstance(after_this, unicode)
+    
     return string[string.index(after_this) + len(after_this):]
 
 def get_before(string, before_this):
+    assert isinstance(string, str) or isinstance(string, unicode)
+    assert isinstance(before_this, str) or isinstance(before_this, unicode)
+    
     return string[:string.index(before_this)]
 
 def decode_packed_javascript(packed):
+    assert isinstance(packed, str) or isinstance(packed, unicode)
+    
     pack = get_after(packed, "return p}('")
     for index in range(len(pack)):
         if pack[index] == "'" and pack[index-1] != "\\":

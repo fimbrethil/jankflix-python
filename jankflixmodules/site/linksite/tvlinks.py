@@ -12,12 +12,15 @@ class TVLinks(LinkSite):
     LinkSite implementation of TVLinks.eu
     '''
     def __init__(self, url = None):
+        if url:
+            assert isinstance(url, str)
         scheme, host, path, params, query, fragment =\
             urlparse.urlparse(url)
         if path[-1] != "/":
             path+="/"
             url = urlparse.urlunparse((scheme, host, path, params, query, fragment))
         super(TVLinks, self).__init__(url)
+
     def getSeasons(self):
         seasons = []
         last_season_dirty = str(self.getSoup().find("div", "bg_imp biggest bold dark clear").getText())
@@ -29,13 +32,16 @@ class TVLinks(LinkSite):
             seasons.append(season_num)
         return seasons
 
-    
     def getEpisodes(self, season):
+        assert isinstance(season, int)
+        
         episodes = self.getSoup().find("ul", id = "ul_snr" + str(season)).findAll("span", "c1")
         return [int(ep.getText()[8:]) for ep in episodes]
-    
+
     @unicodeToAscii
     def getEpisodeNames(self, season):
+        assert isinstance(season, int)
+        
         try:
             episodes = self.getSoup().find("ul", id = "ul_snr" + str(season)).findAll("span", "c2")
             return [ep.getText() for ep in episodes]
@@ -44,26 +50,42 @@ class TVLinks(LinkSite):
 
     @memoized
     def getEpisodeSoup(self, season, episode):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        
         return BeautifulSoup(self.getPage(self.url + "season_" + str(season) + "/episode_" + str(episode) + "/"))
-    
+
     @memoized
     def getEpisodeResultSoup(self, season, episode):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        
         return BeautifulSoup(self.getPage(self.url + "season_" + str(season) + "/episode_" + str(episode) + "/video-results/"))
-   
+
     @unicodeToAscii
     def getSummary(self, season, episode):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        
         episode_soup = self.getEpisodeSoup(season, episode)
         first_part = episode_soup.find("li", "cfix mb_1")
         return first_part.getText()
 
     @unicodeToAscii
     def getHostSiteTypes(self, season, episode):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        
         hostTypes = self.getEpisodeResultSoup(season, episode).find("ul", id = "table_search").findAll("span", "block mb_05 nowrap")
         host_sites_with_visit  = [host.find("span", "bigger bold underline").getText() for host in hostTypes]
         return [host_site.replace("Visit ","") for host_site in host_sites_with_visit]
 
     @unicodeToAscii
     def getHostSiteAtIndex(self, season, episode, index):
+        assert isinstance(season, int)
+        assert isinstance(episode, int)
+        assert isinstance(index, int)
+        
         resultSoup = self.getEpisodeResultSoup(season, episode)
         epElements = resultSoup.find("ul", id = "table_search").findAll("li")
         gateLinks = [el.find("a").get("onclick") for el in epElements]
@@ -75,10 +97,11 @@ class TVLinks(LinkSite):
         response = urllib2.urlopen(request)
         parseresult = urlparse.urlparse(response.geturl())
         return response.geturl()
-    
 
     @staticmethod
     def searchSite(query):
+        assert isinstance(query, str)
+        
         surl = "http://www.tv-links.eu/_search/?s=" + query
         resultSoup = BeautifulSoup(OneChannel.getPage(surl))
         
@@ -94,4 +117,3 @@ class TVLinks(LinkSite):
                 title = search_result.find("span", "biggest bold").getText()
                 tlTuples.append((str(title), str(link)))
         return tlTuples
-
