@@ -28,7 +28,7 @@ class OneChannel(LinkSite):
             if part[1] not in seasons:
                 seasons.append(str(part[1]))
         intSeasons = [int(season) for season in seasons]
-        return intSeasons
+        return sorted(intSeasons)
 
     def getEpisodes(self, season):
         assert isinstance(season, int)

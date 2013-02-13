@@ -111,7 +111,7 @@ class LinkSite(Site):
     '''
     def getSeasons(self):
         '''
-        @return: A list of season numbers
+        @return: A sorted list of season numbers
         @rtype: list of ints
         '''
         raise NotImplementedError

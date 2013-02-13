@@ -30,7 +30,7 @@ class TVLinks(LinkSite):
         for r in self.getSoup().findAll("div", "bg_imp biggest bold dark clear mt_1"):
             season_num = int(r.getText()[7:8])
             seasons.append(season_num)
-        return seasons
+        return sorted(seasons)
 
     def getEpisodes(self, season):
         assert isinstance(season, int)
