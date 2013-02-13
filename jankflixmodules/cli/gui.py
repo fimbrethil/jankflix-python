@@ -72,11 +72,10 @@ class JankflixForm(QtGui.QWidget):
         data = [name_url[0] for name_url in runQueryResult]
         self.updateListView(data, self.ui.myResultsListView)
         self.myQueryResult = runQueryResult
-        #if there is only one result, automatically select it. 
-        if len(data) == 1:
-            index = self.ui.myResultsListView.model().index(0,0);
-            self.ui.myResultsListView.setCurrentIndex(index)
-            self.handleChoseResult()
+        #automatically select first result regardless of the number of search results
+        index = self.ui.myResultsListView.model().index(0,0);
+        self.ui.myResultsListView.setCurrentIndex(index)
+        self.handleChoseResult()
     def updateListView(self, data, listview):
         assert isinstance(listview , QtGui.QListView)
         assert isinstance(data , list)
