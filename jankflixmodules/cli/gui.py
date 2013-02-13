@@ -51,6 +51,7 @@ class JankflixForm(QtGui.QWidget):
         assert isinstance(httpMethod , types.FunctionType) or isinstance(httpMethod , types.MethodType)
         assert isinstance(args , tuple)
         
+        #if any webrequest is running, terminate it and start this one instead
         if self.myWebRequestThread != None:
             self.myWebRequestThread.terminate()
         wrThread = WebRequestThread(self, httpMethod, *args)
@@ -121,6 +122,7 @@ class JankflixForm(QtGui.QWidget):
             self.myAreResultsTvLinks = True
         else:
             self.myAreResultsTvLinks = False
+        self.handleRunQuery()
     def handleRunQuery(self):
         self.myQuery = str(self.ui.mySearchLineEdit.text())
         if len(self.myQuery) > 0:
