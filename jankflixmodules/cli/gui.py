@@ -24,6 +24,7 @@ class JankflixForm(QtGui.QWidget):
         self.ui.myEpisodeListView.clicked.connect(self.handleChoseEpisode)
         self.ui.mySavePushButton.clicked.connect(self.handleSave)
         self.ui.myWatchPushButton.clicked.connect(self.handleOpen)
+        self.ui.mySearchLineEdit.setFocus()
         self.myDownloadThread = None
         self.myWebRequestThread = None
         self.myFilename = None
