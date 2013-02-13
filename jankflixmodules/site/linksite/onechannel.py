@@ -38,7 +38,7 @@ class OneChannel(LinkSite):
             if part[1] == str(season):
                 episodes.append(str(part[3]))
         intEpisodes = [int(episode) for episode in episodes]
-        return intEpisodes
+        return sorted(intEpisodes)
     
     @unicodeToAscii
     def getEpisodeNames(self, season):

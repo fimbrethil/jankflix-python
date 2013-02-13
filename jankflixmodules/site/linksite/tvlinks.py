@@ -36,7 +36,8 @@ class TVLinks(LinkSite):
         assert isinstance(season, int)
         
         episodes = self.getSoup().find("ul", id = "ul_snr" + str(season)).findAll("span", "c1")
-        return [int(ep.getText()[8:]) for ep in episodes]
+        intepisodes =  [int(ep.getText()[8:]) for ep in episodes]
+        return sorted(intepisodes)
 
     @unicodeToAscii
     def getEpisodeNames(self, season):
