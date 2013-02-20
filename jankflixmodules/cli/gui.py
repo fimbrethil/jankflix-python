@@ -12,6 +12,18 @@ import urllib2
 import types
 
 
+'''
+Prefetch search key for link site(s), also serves as warmup request.
+Do ALL web requests and logic in general in a separate thread. This includes running initial search, finding a good host site, etc.
+Have a configuration file for common stuff (where to save to, file name pattern)
+Remember/cache on disk last search and results (aka if I just watched season 2 episode 6 of Game of Thrones, when I open it back up, have the linksite search results open with the correct one selected, the correct season selected, and the correct, or next, episode selected, all without any web queries)
+ability to download multiple at once/get a season
+Playlists or continuous play
+When naming, use proper show name as given by linksite (capitalized and all)
+Give priority to certain sites/faster downloads. Possibly start the download on a few sites and only use the one that's going the fastest
+Ability to show/submit captcha's and/or support vidxden
+'''
+
 class JankflixForm(QtGui.QWidget):
     def __init__(self, parent=None):
         super(JankflixForm, self).__init__(parent)
@@ -34,6 +46,11 @@ class JankflixForm(QtGui.QWidget):
             self.myAreResultsTvLinks = True
         else:
             self.myAreResultsTvLinks = False
+        self.prefetchedKey = None
+        self.createWebRequestThread(self.setPrefetchedKey, OneChannel.prefetchSearchKey)
+
+    def setPrefetchedKey(self, key):
+        self.prefetchedKey = key
 
     def createDownloadThread(self, url, path):
         assert isinstance(url, str)
@@ -49,13 +66,13 @@ class JankflixForm(QtGui.QWidget):
 
     def createWebRequestThread(self, updateMethod, httpMethod, *args):
         #the or is because both updateMethod and httpMethod can be either methods specified in the class
-        #or lambdas specified in the calling method 
+        #or lambdas specified in the calling method
         assert isinstance(updateMethod, types.FunctionType) or isinstance(updateMethod, types.MethodType)
         assert isinstance(httpMethod, types.FunctionType) or isinstance(httpMethod, types.MethodType)
         assert isinstance(args, tuple)
 
         #if any webrequest is running, terminate it and start this one instead
-        if self.myWebRequestThread is None:
+        if self.myWebRequestThread is not None:
             self.myWebRequestThread.terminate()
         wrThread = WebRequestThread(self, httpMethod, *args)
         self.connect(wrThread, wrThread.updateListSignal, updateMethod)
@@ -142,7 +159,11 @@ class JankflixForm(QtGui.QWidget):
                 self.createWebRequestThread(self.updateSearchResults, TVLinks.searchSite, self.myQuery)
             else:
                 self.updateStatus("Searching OneChannel for %s" % (self.myQuery))
-                self.createWebRequestThread(self.updateSearchResults, OneChannel.searchSite, self.myQuery)
+                if self.prefetchedKey is None:
+                    searchMethod = OneChannel.searchSite
+                else:
+                    searchMethod = lambda query:OneChannel.searchSite(query, self.prefetchedKey)
+                self.createWebRequestThread(self.updateSearchResults, searchMethod, self.myQuery)
 
     def handleChoseResult(self):
         index = self.getFirstSelectedIndex(self.ui.myResultsListView)
