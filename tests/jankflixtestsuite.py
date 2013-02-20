@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 import hostsitetest
 import linksitetest
 import sitetest
@@ -5,7 +7,7 @@ import unittest
 
 def generateTests():
     tests = []
-#    tests.extend(sitetest.generateTests())
+    tests.extend(sitetest.generateTests())
     tests.extend(hostsitetest.generateTests())
     tests.extend(linksitetest.generateTests())
     return tests

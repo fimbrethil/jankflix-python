@@ -1,11 +1,14 @@
+import sys
+sys.path.append("..")
 import unittest
-import urlparse
-from parameterizedtestcase import ParametrizedTestCase
-from jankflixmodules.site.hostsite.putlocker import Sockshare, Putlocker
-from jankflixmodules.site.hostsite.movreel import Movreel
 from jankflixmodules.site.hostsite.gorillavid import Gorillavid, Daclips, Movpod
-from jankflixmodules.site.hostsite.filebox import FileBox
+from jankflixmodules.site.hostsite.movreel import Movreel
+from jankflixmodules.site.hostsite.putlocker import Sockshare, Putlocker
+from tests.parameterizedtestcase import ParametrizedTestCase
 from jankflixmodules.site.hostsite.filenuke import FileNuke
+from jankflixmodules.site.hostsite.filebox import FileBox
+
+
 class TestHostSite(ParametrizedTestCase):
 
     def testGetVideo(self):

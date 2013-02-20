@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 from jankflixmodules.site import hostsitepicker
 from jankflixmodules.site.linksite.onechannel import OneChannel
 from parameterizedtestcase import ParametrizedTestCase

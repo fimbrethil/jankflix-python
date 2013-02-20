@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 import unittest
 from jankflixmodules.site.linksite.tvlinks import TVLinks
 from jankflixmodules.site.linksite.onechannel import OneChannel
