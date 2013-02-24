@@ -67,7 +67,7 @@ class OneChannel(LinkSite):
         assert isinstance(season, int)
         assert isinstance(episode, int)
 
-        return BeautifulSoup(OneChannel.getPage(self.getEpisodeURL(season, episode)))
+        return self.getPageSoup(self.getEpisodeURL(season, episode))
 
     @unicodeToAscii
     def getSummary(self, season, episode):
@@ -112,7 +112,7 @@ class OneChannel(LinkSite):
     def prefetchSearchKey():
         print "prefetched key"
         surl = "http://www.1channel.ch/index.php"
-        soup = BeautifulSoup(Site.getPage(surl))
+        soup = OneChannel.getPageSoup(surl)
         key = soup.find("input", {"type":"hidden", "name":"key"}).get("value")
         return key
     @staticmethod
@@ -131,7 +131,7 @@ class OneChannel(LinkSite):
                   "key":key,
                   "search_section":"2"}
         surl = "http://www.1channel.ch/index.php?"+urllib.urlencode(params)
-        resultSoup = BeautifulSoup(OneChannel.getPage(surl))
+        resultSoup = OneChannel.getPageSoup(surl)
         ret = []
         results = resultSoup.findAll("div", {"class":"index_item index_item_ie"})
         for result in results:

@@ -1,54 +1,52 @@
 from BeautifulSoup import BeautifulSoup, Tag
+import requests
 from jankflixmodules.utils.constants import USER_AGENT
-import urllib
-import urllib2
 from jankflixmodules.utils.decorators import memoized
 
 
 class Site(object):
-    '''
+    """
     Generic class for all site objects. 
-    '''
-    def __init__(self, url = None):
-        if url != None:
+    """
+
+    def __init__(self, url=None):
+        if url is not None:
             self.url = url
-            self.values = {'User-Agent' : USER_AGENT}
+            self.values = {'User-Agent': USER_AGENT}
+
     @memoized
     def getSoup(self):
-        page, newUrl = Site.getPageWithRedirectedURL(self.url)
-        self.url = newUrl
-        return BeautifulSoup(page)
+        request = Site.__getPage(self.url)
+
+        self.url = request.url
+        content = request.content
+        content = content.replace("iso-8859-1", "utf-8")
+        return BeautifulSoup(content)
+
     @staticmethod
-    def getPage(url, postParams = None):
-        values = {'User-Agent' : USER_AGENT}
-        if postParams == None:
-            request = urllib2.Request(url, postParams, values)
-        else:
-            print "requesting with params:",str(urllib.urlencode(postParams))
-            request = urllib2.Request(url, urllib.urlencode(postParams), values)
-        response = urllib2.urlopen(request)
-        res = str(response.read())
-        response.close()
-        res = res.replace("iso-8859-1", "utf-8")
-        return res
+    def getPageSoup(url, postParams=None):
+        response = Site.__getPage(url, postParams)
+        content = response.content
+        content = content.replace("iso-8859-1", "utf-8")
+        return BeautifulSoup(content)
+
     @staticmethod
-    def getPageWithRedirectedURL(url, postParams = None):
-        values = {'User-Agent' : USER_AGENT}
-        if postParams == None:
-            request = urllib2.Request(url, postParams, values)
+    def __getPage(url, postParams=None):
+        values = {'User-Agent': USER_AGENT}
+
+        if postParams is None:
+            request = requests.get(url, headers=values)
+
         else:
-            request = urllib2.Request(url, urllib.urlencode(postParams), values)
-        response = urllib2.urlopen(request)
-        res = str(response.read())
-        redirected = response.geturl()
-        
-        response.close()
-        res = res.replace("iso-8859-1", "utf-8")
-        return (res, redirected)
-    def submitPostRequest(self, formSoup, extra = None):
+            request = requests.post(url, postParams, headers=values)
+
+        return request
+
+
+    def submitPostRequest(self, formSoup, extra=None):
         assert isinstance(formSoup, Tag)
         if extra:
-            assert isinstance(extra, tuple) 
+            assert isinstance(extra, tuple)
             assert len(extra) == 2
             assert isinstance(extra[0], str)
             assert isinstance(extra[1], str)
@@ -60,23 +58,24 @@ class Site(object):
         for input in inputs:
             name = str(input.get("name"))
             value = str(input.get("value"))
-            print name,value
+            print name, value
             postparams[name] = value
-        
-        return BeautifulSoup(self.getPage(self.url, postparams))
+        return self.getPageSoup(self.url, postparams)
+        # return BeautifulSoup(self.getPage(self.url, postparams))
 
 
 class HostSite(Site):
     '''
     Template for host site implementations with method signatures that must be implemented. 
     '''
+
     def getVideo(self):
         '''
         @return: URL at which the target video is located
         @rtype: string
         '''
         raise NotImplementedError
-    
+
     @staticmethod
     def getName():
         '''
@@ -84,7 +83,7 @@ class HostSite(Site):
         @rtype: string
         '''
         raise NotImplementedError
-    
+
     def getMetadata(self):
         '''
         @return: A dictionary with all the metadata directly available on the website. (video size, length, quality, etc.)
@@ -105,17 +104,19 @@ class HostSite(Site):
         '''
         return NotImplementedError
 
+
 class LinkSite(Site):
     '''
     An abstract class for a specific linksite to implement
     '''
+
     def getSeasons(self):
         '''
         @return: A sorted list of season numbers
         @rtype: list of ints
         '''
         raise NotImplementedError
-    
+
     def getEpisodes(self, season):
         '''
         @param season: Season for which to get episodes
@@ -123,7 +124,7 @@ class LinkSite(Site):
         @rtype: list of ints
         '''
         raise NotImplementedError
-    
+
     def getEpisodeNames(self, season):
         '''
         @param season: Season for which to get episode names
@@ -131,7 +132,7 @@ class LinkSite(Site):
         @rtype: list
         '''
         raise NotImplementedError
-    
+
     def getSummary(self, season, episode):
         '''
         @param season: Season of the summary
@@ -140,7 +141,7 @@ class LinkSite(Site):
         @rtype: string
         '''
         raise NotImplementedError
-    
+
     def getHostSiteTypes(self, season, episode):
         '''
         @param season: Season of the host site types to get
@@ -149,7 +150,7 @@ class LinkSite(Site):
         @rtype: list of strings
         '''
         raise NotImplementedError
-    
+
     def getHostSiteAtIndex(self, season, episode, index):
         '''
         @param season: Season of the host site types to get
@@ -159,7 +160,7 @@ class LinkSite(Site):
         @rtype: string
         '''
         raise NotImplementedError
-    
+
     @staticmethod
     def searchSite(self, query):
         '''

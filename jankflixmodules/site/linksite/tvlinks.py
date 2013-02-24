@@ -53,15 +53,15 @@ class TVLinks(LinkSite):
     def getEpisodeSoup(self, season, episode):
         assert isinstance(season, int)
         assert isinstance(episode, int)
-        
-        return BeautifulSoup(self.getPage(self.url + "season_" + str(season) + "/episode_" + str(episode) + "/"))
+        return self.getPageSoup(self.url + "season_" + str(season) + "/episode_" + str(episode) + "/")
+
 
     @memoized
     def getEpisodeResultSoup(self, season, episode):
         assert isinstance(season, int)
         assert isinstance(episode, int)
         
-        return BeautifulSoup(self.getPage(self.url + "season_" + str(season) + "/episode_" + str(episode) + "/video-results/"))
+        return self.getPageSoup(self.url + "season_" + str(season) + "/episode_" + str(episode) + "/video-results/")
 
     @unicodeToAscii
     def getSummary(self, season, episode):
@@ -104,7 +104,7 @@ class TVLinks(LinkSite):
         assert isinstance(query, str)
         
         surl = "http://www.tv-links.eu/_search/?s=" + query
-        resultSoup = BeautifulSoup(OneChannel.getPage(surl))
+        resultSoup = TVLinks.getPageSoup(surl)
         
         tlTuples = []
         for search_result in resultSoup.findAll("a","outer list cfix"):

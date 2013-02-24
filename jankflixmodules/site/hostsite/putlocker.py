@@ -37,8 +37,7 @@ class Putlocker(HostSite):
         script = newsoup.find("div", id = "play").find("script").getText()
         script = stringutils.get_after(script, "playlist: '")
         script = stringutils.get_before(script, "',")
-
-        xmlsoup = BeautifulSoup(self.getPage(self.getBaseUrl() + script))
+        xmlsoup = self.getPageSoup(self.getBaseUrl() + script)
         return xmlsoup.find("media:content").get("url")
 
 class Sockshare(Putlocker):
