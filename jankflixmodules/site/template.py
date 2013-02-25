@@ -31,7 +31,10 @@ class Site(object):
         content = response.content
         content = content.replace("iso-8859-1", "utf-8")
         soup = BeautifulSoup(content)
-        soup.from_cache = response.from_cache
+        if hasattr(response, "from_cache"):
+            soup.from_cache = response.from_cache
+        else:
+            soup.from_cache = False
         soup.url = response.url
         return soup
 
