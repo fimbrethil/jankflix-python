@@ -5,7 +5,10 @@ from jankflixmodules.utils import constants
 from jankflixmodules.utils.constants import USER_AGENT
 from jankflixmodules.utils.decorators import memoized
 
+cache_initialized = False
 if constants.USING_CACHE:
+    print "initializing cache"
+    cache_initialized = True
     requests_cache.install_cache('test_cache', backend='sqlite', expire_after=constants.CACHE_EXPIRATION_SECONDS,
                                  allowable_methods=('GET', 'POST'))
 
@@ -16,8 +19,8 @@ class Site(object):
     """
 
     def __init__(self, url=None):
-        print "my url is", url
         if url is not None:
+            print "cache initialized is", cache_initialized
             self.url = url
             self.values = {'User-Agent': USER_AGENT}
 

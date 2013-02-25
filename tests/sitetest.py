@@ -1,34 +1,49 @@
 import sys
+
 sys.path.append("..")
 from jankflixmodules.utils import constants
 #tell Site that we are using the cache
 constants.USING_CACHE = True
+from jankflixmodules.site.linksite.tvlinks import TVLinks
 from jankflixmodules.site import hostsitepicker
 from jankflixmodules.site.linksite.onechannel import OneChannel
-from parameterizedtestcase import ParametrizedTestCase
 import unittest
-class TestHostSitePicker(ParametrizedTestCase):
+
+
+class TestHostSitePicker():
+    def getLinkSite(self):
+        raise NotImplementedError()
 
     def testIsSupportedHostSite(self):
-        self.assertTrue(hostsitepicker.isSupportedHostSite("putlocker"),"putlocker is supported hostsite")
-        self.assertTrue(hostsitepicker.isSupportedHostSite("movreel"),"movreel is supported hostsite")
-        self.assertTrue(hostsitepicker.isSupportedHostSite("gorillavid"),"gorillavid is supported hostsite")
-        self.assertTrue(hostsitepicker.isSupportedHostSite("daclips"),"daclips is supported hostsite")
-        self.assertTrue(hostsitepicker.isSupportedHostSite("movpod"),"movpod is supported hostsite")
-        self.assertTrue(hostsitepicker.isSupportedHostSite("filebox"),"filebox is supported hostsite")
-        self.assertTrue(hostsitepicker.isSupportedHostSite("filenuke"),"filenuke is supported hostsite")
-        
+        self.assertTrue(hostsitepicker.isSupportedHostSite("putlocker"), "putlocker is supported hostsite")
+        self.assertTrue(hostsitepicker.isSupportedHostSite("movreel"), "movreel is supported hostsite")
+        self.assertTrue(hostsitepicker.isSupportedHostSite("gorillavid"), "gorillavid is supported hostsite")
+        self.assertTrue(hostsitepicker.isSupportedHostSite("daclips"), "daclips is supported hostsite")
+        self.assertTrue(hostsitepicker.isSupportedHostSite("movpod"), "movpod is supported hostsite")
+        self.assertTrue(hostsitepicker.isSupportedHostSite("filebox"), "filebox is supported hostsite")
+        self.assertTrue(hostsitepicker.isSupportedHostSite("filenuke"), "filenuke is supported hostsite")
+
     def testPickFromHostSiteTypes(self):
         #picking arbitrary season, episode
-        hostsitepicker.pickFromLinkSite(self.param, 2, 2)
-    
-def generateTests():
-    tests = []
-    tests.append(ParametrizedTestCase.parametrize(TestHostSitePicker, param = OneChannel("http://www.1channel.ch/watch-9583-Avatar-The-Last-Airbender")))
-    
-    return tests
+        hostsitepicker.pickFromLinkSite(self.getLinkSite(), 2, 2)
+
+
+class OneChannelPickingTest(unittest.TestCase, TestHostSitePicker):
+    link_site = OneChannel("http://www.1channel.ch/watch-9583-Avatar-The-Last-Airbender")
+
+    def getLinkSite(self):
+        return self.link_site
+
+
+class TVLinkslPickingTest(unittest.TestCase, TestHostSitePicker):
+    link_site = TVLinks("http://www.tv-links.eu/tv-shows/Avatar--The-Last-Airbender_76/")
+
+    def getLinkSite(self):
+        return self.link_site
+
+
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    for test in generateTests():
-        suite.addTest(test)    
-    unittest.TextTestRunner(verbosity = 2).run(suite)
+    suite.addTest(OneChannelPickingTest())
+    suite.addTest(TVLinkslPickingTest())
+    unittest.TextTestRunner(verbosity=2).run(suite)
