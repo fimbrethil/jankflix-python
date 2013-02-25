@@ -1,8 +1,5 @@
-from BeautifulSoup import BeautifulSoup
-from jankflixmodules.site.linksite.onechannel import OneChannel
 from jankflixmodules.site.template import LinkSite
 from jankflixmodules.utils.decorators import unicodeToAscii, memoized
-import urllib2
 from jankflixmodules import utils
 import urlparse
 from jankflixmodules.utils import stringutils
@@ -94,10 +91,7 @@ class TVLinks(LinkSite):
         data = utils.stringutils.get_after(targetGateLink, "frameLink('")
         data = utils.stringutils.get_before(data, "');")
         url = "http://www.tv-links.eu/gateway.php?data=" + data
-        request = urllib2.Request(url, None, self.values)
-        response = urllib2.urlopen(request)
-        parseresult = urlparse.urlparse(response.geturl())
-        return response.geturl()
+        return self.getPageSoup(url).url
 
     @staticmethod
     def searchSite(query):

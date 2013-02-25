@@ -1,7 +1,13 @@
 from BeautifulSoup import BeautifulSoup, Tag
 import requests
+import requests_cache
+from jankflixmodules.utils import constants
 from jankflixmodules.utils.constants import USER_AGENT
 from jankflixmodules.utils.decorators import memoized
+
+if constants.USING_CACHE:
+    requests_cache.install_cache('test_cache', backend='sqlite', expire_after=constants.CACHE_EXPIRATION_SECONDS,
+                                 allowable_methods=('GET', 'POST'))
 
 
 class Site(object):
@@ -10,25 +16,29 @@ class Site(object):
     """
 
     def __init__(self, url=None):
+        print "my url is", url
         if url is not None:
             self.url = url
             self.values = {'User-Agent': USER_AGENT}
 
     @memoized
     def getSoup(self):
-        request = Site.__getPage(self.url)
+        response = Site.__getPage(self.url)
+        return Site.__getSoupAddFields(response)
 
-        self.url = request.url
-        content = request.content
+    @staticmethod
+    def __getSoupAddFields(response):
+        content = response.content
         content = content.replace("iso-8859-1", "utf-8")
-        return BeautifulSoup(content)
+        soup = BeautifulSoup(content)
+        soup.from_cache = response.from_cache
+        soup.url = response.url
+        return soup
 
     @staticmethod
     def getPageSoup(url, postParams=None):
         response = Site.__getPage(url, postParams)
-        content = response.content
-        content = content.replace("iso-8859-1", "utf-8")
-        return BeautifulSoup(content)
+        return Site.__getSoupAddFields(response)
 
     @staticmethod
     def __getPage(url, postParams=None):
@@ -36,12 +46,9 @@ class Site(object):
 
         if postParams is None:
             request = requests.get(url, headers=values)
-
         else:
             request = requests.post(url, postParams, headers=values)
-
         return request
-
 
     def submitPostRequest(self, formSoup, extra=None):
         assert isinstance(formSoup, Tag)
@@ -61,7 +68,6 @@ class Site(object):
             print name, value
             postparams[name] = value
         return self.getPageSoup(self.url, postparams)
-        # return BeautifulSoup(self.getPage(self.url, postparams))
 
 
 class HostSite(Site):

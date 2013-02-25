@@ -1,5 +1,8 @@
 import sys
 sys.path.append("..")
+from jankflixmodules.utils import constants
+#tell Site that we are using the cache
+constants.USING_CACHE = True
 from jankflixmodules.site import hostsitepicker
 from jankflixmodules.site.linksite.onechannel import OneChannel
 from parameterizedtestcase import ParametrizedTestCase

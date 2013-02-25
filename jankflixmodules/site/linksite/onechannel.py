@@ -1,10 +1,9 @@
-from BeautifulSoup import BeautifulSoup
+import urllib
 from jankflixmodules.site.template import LinkSite, Site
 from jankflixmodules.utils import stringutils
 from jankflixmodules.utils.decorators import memoized, unicodeToAscii
-import urllib
-import urllib2
 import urlparse
+
 
 class OneChannel(LinkSite):
     '''
@@ -98,16 +97,11 @@ class OneChannel(LinkSite):
         soup = self.getEpisodeSoup(season, episode)
         links = soup.findAll("span", {"class":"movie_version_link"})
         url = "http://www.1channel.ch" + links[index].find("a").get("href")
-        request = urllib2.Request(url, None, self.values)
-        response = urllib2.urlopen(request)
-        parseresult = urlparse.urlparse(response.geturl())
+        responseSoup = self.getPageSoup(url)
+        parseresult = urlparse.urlparse(responseSoup.url)
         if parseresult.hostname == "www.1channel.ch":
-            res = str(response.read())
-            response.close()
-            res = res.replace("iso-8859-1", "utf-8")
-            nextSoup = BeautifulSoup(res)
-            return str(nextSoup.findAll("frame")[1].get("src"))
-        return str(response.geturl())
+            return str(responseSoup.findAll("frame")[1].get("src"))
+        return str(responseSoup.url)
     @staticmethod
     def prefetchSearchKey():
         print "prefetched key"
@@ -130,7 +124,7 @@ class OneChannel(LinkSite):
         params = {"search_keywords":query,
                   "key":key,
                   "search_section":"2"}
-        surl = "http://www.1channel.ch/index.php?"+urllib.urlencode(params)
+        surl = "http://www.1channel.ch/index.php?" + urllib.urlencode(params)
         resultSoup = OneChannel.getPageSoup(surl)
         ret = []
         results = resultSoup.findAll("div", {"class":"index_item index_item_ie"})

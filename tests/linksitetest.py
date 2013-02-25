@@ -1,60 +1,65 @@
 import sys
 sys.path.append("..")
+from jankflixmodules.utils import constants
+#tell Site that we are using the cache
+constants.USING_CACHE = True
 import unittest
 from jankflixmodules.site.linksite.tvlinks import TVLinks
 from jankflixmodules.site.linksite.onechannel import OneChannel
-from parameterizedtestcase import ParametrizedTestCase
 from jankflixmodules.site.template import LinkSite
 
 
-class TestLinkSite(ParametrizedTestCase):
+class TestLinkSite():
+
+    def getLinkSite(self):
+        return self.link_site
 
     def testGetSeasons(self):
-        seasons = self.param.getSeasons()
+        seasons = self.getLinkSite().getSeasons()
         self.assertIsInstance(seasons, list, type(seasons))
         self.assertGreater(len(seasons), 0, len(seasons))
         for season in seasons:
             self.assertIsInstance(season,int,type(season))
 
     def testGetEpisodes(self):
-        seasons = self.param.getSeasons()
+        seasons = self.getLinkSite().getSeasons()
         for season in seasons:
-            episodes = self.param.getEpisodes(season)
+            episodes = self.getLinkSite().getEpisodes(season)
             self.assertIsInstance(episodes, list, type(episodes))
             self.assertGreater(len(episodes), 0, len(episodes))
             for episode in episodes:
                 self.assertIsInstance(episode,int,type(episode))
 
     def testGetEpisodeNames(self):
-        seasons = self.param.getSeasons()
+        seasons = self.getLinkSite().getSeasons()
         for season in seasons:
-            episode_names = self.param.getEpisodeNames(season)
+            episode_names = self.getLinkSite().getEpisodeNames(season)
             self.assertIsInstance(episode_names, list, type(episode_names))
             for episode_name in episode_names:
                 self.assertIsInstance(episode_name, str,type(episode_name))
                 self.assertGreater(len(episode_name), 0,len(episode_name))
+
     def testGetSummary(self):
-        seasons = self.param.getSeasons()
+        seasons = self.getLinkSite().getSeasons()
         for season in seasons:
-            episodes = self.param.getEpisodes(season)
+            episodes = self.getLinkSite().getEpisodes(season)
             #this is done for speed considerations, so one doesn't need to
             #make O(n) web calls where n is the number of total episodes
-            summary = self.param.getSummary(season,episodes[0])
+            summary = self.getLinkSite().getSummary(season,episodes[0])
             self.assertIsInstance(summary,str,type(summary))
             self.assertGreater(len(summary), 0,len(summary))
+
     def testGetHostSiteTypes(self):
 
-        seasons = self.param.getSeasons()
+        seasons = self.getLinkSite().getSeasons()
         for season in seasons:
-            episodes = self.param.getEpisodes(season)
+            episodes = self.getLinkSite().getEpisodes(season)
             #this is done for speed considerations, so one doesn't need to
             #make O(n) web calls where n is the number of total episodes
-            host_site_types = self.param.getHostSiteTypes(season, episodes[0])
+            host_site_types = self.getLinkSite().getHostSiteTypes(season, episodes[0])
             for host_site_type in host_site_types:
                 self.assertIsInstance(host_site_type,str,type(host_site_type))
                 self.assertGreater(len(host_site_type), 0,len(host_site_type))
-
-
 
     def testGetHostSiteAtIndex(self):
         #because many link sites are rate-limited on the number of host-sites
@@ -63,26 +68,42 @@ class TestLinkSite(ParametrizedTestCase):
         #part of the method with running into rate limits on resolutions.
 
         #pick the first season
-        season = self.param.getSeasons()[0]
+        season = self.getLinkSite().getSeasons()[0]
         #pick the first episode
-        episode = self.param.getEpisodes(season)[0]
-        host_site_types = self.param.getHostSiteTypes(season,episode)
+        episode = self.getLinkSite().getEpisodes(season)[0]
+        host_site_types = self.getLinkSite().getHostSiteTypes(season,episode)
         #get the (0) index of the last host site
         index = len(host_site_types)-1
         #attempt to resolve it to a host site url
         if index >= 0:
-            host_site = self.param.getHostSiteAtIndex(season,episode,index)
+            host_site = self.getLinkSite().getHostSiteAtIndex(season,episode,index)
             self.assertIsInstance(host_site,str,type(host_site))
             self.assertGreater(len(host_site), 0,len(host_site))
 
-class TestLinkSiteSearch(ParametrizedTestCase):
+
+class TestOneChannel(unittest.TestCase, TestLinkSite):
+    link_site = OneChannel("http://www.1channel.ch/watch-9583-Avatar-The-Last-Airbender")
+
+
+class TestTVLinks(unittest.TestCase, TestLinkSite):
+    link_site = TVLinks("http://www.tv-links.eu/tv-shows/Avatar--The-Last-Airbender_76/")
+
+
+class TestTVLinks2(unittest.TestCase, TestLinkSite):
+    link_site = TVLinks("http://www.tv-links.eu/tv-shows/Game-of-Thrones--_25243/")
+
+
+class TestLinkSiteSearch():
+    def getLinkSiteClass(self):
+        raise NotImplementedError()
+
+    def getQuery(self):
+        raise NotImplementedError()
+
     def testSearchSite(self):
-        self.assertIsInstance(self.param, tuple)
-        self.assertEqual(len(self.param), 2)
-        (myLinkSite, query) = self.param
-        self.assertTrue(issubclass(myLinkSite, LinkSite))
-        self.assertIsInstance(query, str)
-        search_result = myLinkSite.searchSite(query)
+        self.assertTrue(issubclass(self.getLinkSiteClass(), LinkSite))
+        self.assertIsInstance(self.getQuery(), str)
+        search_result = self.getLinkSiteClass().searchSite(self.getQuery())
         self.assertIsNotNone(search_result)
         self.assertGreater(len(search_result), 0)
         for result in search_result:
@@ -91,18 +112,27 @@ class TestLinkSiteSearch(ParametrizedTestCase):
             self.assertIsInstance(result[1], str)
 
 
+class TestOneChannelSearch(unittest.TestCase, TestLinkSiteSearch):
+    def getLinkSiteClass(self):
+        return OneChannel
 
-def generateTests():
-    tests = []
-    tests.append(ParametrizedTestCase.parametrize(TestLinkSite, param=OneChannel("http://www.1channel.ch/watch-9583-Avatar-The-Last-Airbender")))
-    tests.append(ParametrizedTestCase.parametrize(TestLinkSite, param=TVLinks("http://www.tv-links.eu/tv-shows/Avatar--The-Last-Airbender_76/")))
-    tests.append(ParametrizedTestCase.parametrize(TestLinkSite, param=TVLinks("http://www.tv-links.eu/tv-shows/Game-of-Thrones--_25243/")))
-    tests.append(ParametrizedTestCase.parametrize(TestLinkSiteSearch, param=(OneChannel, "avatar")))
-    tests.append(ParametrizedTestCase.parametrize(TestLinkSiteSearch, param=(TVLinks, "avatar")))
+    def getQuery(self):
+        return "avatar"
 
-    return tests
+
+class TestTVLinksSearch(unittest.TestCase, TestLinkSiteSearch):
+    def getLinkSiteClass(self):
+        return TVLinks
+
+    def getQuery(self):
+        return "avatar"
+
+
 if __name__ == "__main__":
     suite = unittest.TestSuite()
-    for test in generateTests():
-        suite.addTest(test)
+    suite.addTest(TestOneChannel)
+    suite.addTest(TestTVLinks)
+    suite.addTest(TestTVLinks2)
+    suite.addTest(TestOneChannelSearch)
+    suite.addTest(TestTVLinksSearch)
     unittest.TextTestRunner(verbosity = 2).run(suite)
