@@ -22,16 +22,17 @@ class FileBox(HostSite):
     def getVideo(self):
         newsoup = self.getStep2()
         target_div = newsoup.find("div", {"class":"getpremium_heading4"})
-        almost_link = target_div.center.input["onclick"]\
+        almost_link = target_div.center.input["onclick"]
         #get after the beginning document.location=' business and remove the last character which is a '
         return stringutils.get_after(almost_link,"document.location='")[:-1]
 
     @memoized
     def getStep2(self):
-        time_to_sleep = self.getSoup().find("span",id="countdown_str").find("span").getText()
-        print "sleeping for ", time_to_sleep, " seconds"
-        time.sleep(int(time_to_sleep))
-        form = self.getSoup().find("form", {"name":"F1","method":"POST"})
-        print form
+        soup = self.getSoup()
+        time_to_sleep = soup.find("span", id="countdown_str").find("span").getText()
+        if not soup.from_cache:
+            print "sleeping for ", time_to_sleep, " seconds"
+            time.sleep(int(time_to_sleep))
+        form = self.getSoup().find("form", {"name": "F1", "method": "POST"})
         return self.submitPostRequest(form)
 
