@@ -24,7 +24,9 @@ class Site(object):
     @memoized
     def getSoup(self):
         response = Site.__getPage(self.url)
-        return Site.__getSoupAddFields(response)
+        soup_with_fields = Site.__getSoupAddFields(response)
+        self.url = soup_with_fields.url
+        return soup_with_fields
 
     @staticmethod
     def __getSoupAddFields(response):
