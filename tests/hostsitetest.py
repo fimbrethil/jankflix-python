@@ -59,6 +59,10 @@ class TestMovpod(unittest.TestCase, TestHostSite):
     host_site = Movpod("http://movpod.in/aly8yr7jfw6f")
 
 
+class TestMovpod2(unittest.TestCase, TestHostSite):
+    host_site = Movpod("http://movpod.net/mpmu3t2lutvc")
+
+
 class TestFileBox(unittest.TestCase, TestHostSite):
     host_site = FileBox("http://www.filebox.com/pv78hy1iqqem")
 
@@ -75,6 +79,7 @@ if __name__ == "__main__":
     suite.addTest(TestGorillavid2())
     suite.addTest(TestDaclips())
     suite.addTest(TestMovpod())
+    suite.addTest(TestMovpod2())
     suite.addTest(TestMovreel())
     suite.addTest(TestFileBox())
     suite.addTest(TestFileNuke())
