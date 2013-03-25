@@ -12,6 +12,9 @@ from jankflixmodules.site.hostsite.filebox import FileBox
 
 
 class TestHostSite():
+    def setUp(self):
+        print "Testing url", self.getHostSite()
+
     def getHostSite(self):
         return self.host_site
 
@@ -69,6 +72,11 @@ class TestFileBox(unittest.TestCase, TestHostSite):
 
 class TestFileNuke(unittest.TestCase, TestHostSite):
     host_site = FileNuke("http://filenuke.com/3b6c44atsjky")
+
+
+class TestFileNuke(unittest.TestCase, TestHostSite):
+    host_site = FileNuke("http://filenuke.com/y7d29c4jtwak")
+
 
 if __name__ == "__main__":
     suite = unittest.TestSuite()
