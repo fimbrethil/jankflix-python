@@ -14,11 +14,12 @@ class Gorillavid(HostSite):
     def getMetadata(self):
         ret = dict()
         soup = self.getStep2()
-        scripts = soup.findAll("script")
+        scripts = soup.find("div", {"id": "player_code"}).findAll("script")
+        #could either be the 2nd or 3rd script... have to check each one.
         for script in scripts:
             scriptText = script.getText()
             #makes sure it's the right script (there are multiple)
-            if len(scriptText) > 0 and scriptText.count('var player = null;') > 0:
+            if 'file: "' in script.getText():
                 namepart = stringutils.get_after(scriptText, 'file: "')
                 ret["name"] = stringutils.get_before(namepart, '"')
                 ret["extension"] = ret["name"][-3:]
@@ -36,10 +37,13 @@ class Gorillavid(HostSite):
     def getVideo(self):
         newsoup = self.getStep2()
         scripts = newsoup.find("div", {"id":"player_code"}).findAll("script")
-        targetScriptText = scripts[2].getText()
-        targetScriptPart = stringutils.get_after(targetScriptText, 'file: "')
-        targetScriptPart = stringutils.get_before(targetScriptPart, '",')
-        return targetScriptPart
+        #could either be the 2nd or 3rd script... have to check each one.
+        for script in scripts:
+            if 'file: "' in script.getText():
+                targetScriptText = script.getText()
+                targetScriptPart = stringutils.get_after(targetScriptText, 'file: "')
+                targetScriptPart = stringutils.get_before(targetScriptPart, '",')
+                return targetScriptPart
 
     @memoized
     def getStep2(self):
