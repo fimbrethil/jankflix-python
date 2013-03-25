@@ -1,14 +1,13 @@
 from PyQt4 import QtCore, QtGui
 from gui_gen import Ui_Form
+from jankflixmodules.cli.downloader import ProgressCancel
 from jankflixmodules.site import hostsitepicker
 from jankflixmodules.site.linksite.onechannel import OneChannel
 from jankflixmodules.site.linksite.tvlinks import TVLinks
-from jankflixmodules.utils.constants import USER_AGENT
 import os
 import subprocess
 import sys
 import time
-import urllib2
 import types
 
 
@@ -27,42 +26,34 @@ Ability to show/submit captcha's and/or support vidxden
 class JankflixForm(QtGui.QWidget):
     def __init__(self, parent=None):
         super(JankflixForm, self).__init__(parent)
+
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.ui.mySearchLineEdit.returnPressed.connect(self.handleRunQuery)
         self.ui.my1ChannelRadioButton.clicked.connect(lambda: self.handleRadioButton("1channel"))
         self.ui.myTVLinksRadioButton.clicked.connect(lambda: self.handleRadioButton("tvlinks"))
-        self.ui.myResultsListView.clicked.connect(self.handleChoseResult)
-        self.ui.mySeasonListView.clicked.connect(self.handleChoseSeason)
-        self.ui.myEpisodeListView.clicked.connect(self.handleChoseEpisode)
+        self.ui.myResultsListWidget.clicked.connect(self.handleChoseResult)
+        self.ui.mySeasonListWidget.clicked.connect(self.handleChoseSeason)
+        self.ui.myEpisodeListWidget.clicked.connect(self.handleChoseEpisode)
         self.ui.mySavePushButton.clicked.connect(self.handleSave)
         self.ui.myWatchPushButton.clicked.connect(self.handleOpen)
         self.ui.mySearchLineEdit.setFocus()
+
         self.myDownloadThread = None
         self.myWebRequestThread = None
         self.myFilename = None
-        self.myFilename = None
+
         if self.ui.myTVLinksRadioButton.isChecked():
             self.myAreResultsTvLinks = True
         else:
             self.myAreResultsTvLinks = False
-        self.prefetchedKey = None
-        self.createWebRequestThread(self.setPrefetchedKey, OneChannel.prefetchSearchKey)
+        # if not hasattr(self, "prefetchedKey") or self.prefetchedKey is not None:
+        #     self.createWebRequestThread(self.setPrefetchedKey, OneChannel.prefetchSearchKey)
+        self.setPrefetchedKey(None)
+        self.pc = ProgressCancel(self, self.ui.myDownloadGridLayout)
 
     def setPrefetchedKey(self, key):
         self.prefetchedKey = key
-
-    def createDownloadThread(self, url, path):
-        assert isinstance(url, str)
-        assert isinstance(path, str)
-
-        workThread = WorkThread(self, url, path)
-        self.connect(workThread, workThread.statusSignal, self.ui.myStatusLabel.setText)
-        self.connect(workThread, workThread.progressSignal, self.ui.myProgressBar.setValue)
-        workThread.start()
-        self.ui.myCancelPushButton.setEnabled(True)
-        self.ui.myCancelPushButton.clicked.connect(workThread.terminate)
-        return workThread
 
     def createWebRequestThread(self, updateMethod, httpMethod, *args):
         #the or is because both updateMethod and httpMethod can be either methods specified in the class
@@ -70,7 +61,6 @@ class JankflixForm(QtGui.QWidget):
         assert isinstance(updateMethod, types.FunctionType) or isinstance(updateMethod, types.MethodType)
         assert isinstance(httpMethod, types.FunctionType) or isinstance(httpMethod, types.MethodType)
         assert isinstance(args, tuple)
-
         #if any webrequest is running, terminate it and start this one instead
         if self.myWebRequestThread is not None:
             self.myWebRequestThread.terminate()
@@ -89,54 +79,47 @@ class JankflixForm(QtGui.QWidget):
             assert isinstance(result[1], str)
 
         data = [name_url[0] for name_url in runQueryResult]
-        self.updateListView(data, self.ui.myResultsListView)
+        self.updateListWidget(data, self.ui.myResultsListWidget)
         self.myQueryResult = runQueryResult
         #automatically select first result regardless of the number of search results
-        index = self.ui.myResultsListView.model().index(0, 0);
-        self.ui.myResultsListView.setCurrentIndex(index)
+        item = self.ui.myResultsListWidget.item(0)
+        self.ui.myResultsListWidget.setItemSelected(item, True)
         self.handleChoseResult()
 
-    def updateListView(self, data, listview):
-        assert isinstance(listview, QtGui.QListView)
+    def updateListWidget(self, data, listWidget):
+        assert isinstance(listWidget, QtGui.QListWidget)
         assert isinstance(data, list)
         assert len(data) > 0
 
-        model = QtGui.QStandardItemModel()
-        for datum in data:
-            item = QtGui.QStandardItem(str(datum))
-            model.appendRow(item)
-        listview.setModel(model)
+        listWidget.clear()
+        for element in data:
+            listWidget.addItem(str(element))
 
     def updateStatus(self, status):
         assert isinstance(status, str)
 
         self.ui.myStatusLabel.setText(status)
 
-    def getFirstSelectedIndex(self, listview):
-        assert isinstance(listview, QtGui.QListView)
+    def getFirstSelectedIndex(self, ListWidget):
+        assert isinstance(ListWidget, QtGui.QListWidget)
 
-        indecies = listview.selectedIndexes()
+        indecies = ListWidget.selectedIndexes()
         if len(indecies) > 0:
             #gets the row of the selected value
             resultIndex = indecies[0].row()
             return resultIndex
 
-    def getFirstSelectedItem(self, listview):
-        assert isinstance(listview, QtGui.QListView)
+    def getFirstSelectedItem(self, listWidget):
+        assert isinstance(listWidget, QtGui.QListWidget)
 
-        index = self.getFirstSelectedIndex(listview)
+        index = self.getFirstSelectedIndex(listWidget)
         print "first selected index returns %d" % (index)
         if index is not None:
-            model = listview.model()
-            item = model.item(index)
-            return item
+            return listWidget.item(index)
 
     def handleRadioButton(self, whichButton):
         assert isinstance(whichButton, str)
 
-        self.ui.myResultsListView.setModel(QtGui.QStandardItemModel())
-        self.ui.mySeasonListView.setModel(QtGui.QStandardItemModel())
-        self.ui.myEpisodeListView.setModel(QtGui.QStandardItemModel())
         self.ui.mySavePushButton.setEnabled(False)
         self.ui.myWatchPushButton.setEnabled(False)
         if whichButton == "tvlinks":
@@ -148,9 +131,6 @@ class JankflixForm(QtGui.QWidget):
     def handleRunQuery(self):
         self.myQuery = str(self.ui.mySearchLineEdit.text())
         if len(self.myQuery) > 0:
-            self.ui.myResultsListView.setModel(QtGui.QStandardItemModel())
-            self.ui.mySeasonListView.setModel(QtGui.QStandardItemModel())
-            self.ui.myEpisodeListView.setModel(QtGui.QStandardItemModel())
             self.ui.mySavePushButton.setEnabled(False)
             self.ui.myWatchPushButton.setEnabled(False)
             #create result depending on which linksite was checked
@@ -160,17 +140,17 @@ class JankflixForm(QtGui.QWidget):
             else:
                 self.updateStatus("Searching OneChannel for %s" % (self.myQuery))
                 if self.prefetchedKey is None:
+                    print "not prefetched key"
                     searchMethod = OneChannel.searchSite
                 else:
-                    searchMethod = lambda query:OneChannel.searchSite(query, self.prefetchedKey)
+                    print "using prefetched key"
+                    searchMethod = lambda query: OneChannel.searchSite(query, self.prefetchedKey)
                 self.createWebRequestThread(self.updateSearchResults, searchMethod, self.myQuery)
 
     def handleChoseResult(self):
-        index = self.getFirstSelectedIndex(self.ui.myResultsListView)
+        index = self.getFirstSelectedIndex(self.ui.myResultsListWidget)
         if index is None:
             return
-        self.ui.mySeasonListView.setModel(QtGui.QStandardItemModel())
-        self.ui.myEpisodeListView.setModel(QtGui.QStandardItemModel())
         self.ui.mySavePushButton.setEnabled(False)
         self.ui.myWatchPushButton.setEnabled(False)
         url = self.myQueryResult[index][1]
@@ -184,14 +164,13 @@ class JankflixForm(QtGui.QWidget):
             self.myLinkSite = TVLinks(url)
         else:
             self.myLinkSite = OneChannel(url)
-        seasonUpdateMethod = lambda data: self.updateListView(data, self.ui.mySeasonListView)
+        seasonUpdateMethod = lambda data: self.updateListWidget(data, self.ui.mySeasonListWidget)
         self.createWebRequestThread(seasonUpdateMethod, self.myLinkSite.getSeasons)
 
     def handleChoseSeason(self):
-        item = self.getFirstSelectedItem(self.ui.mySeasonListView)
+        item = self.getFirstSelectedItem(self.ui.mySeasonListWidget)
         print "selected season %s" % (item.text())
         if item:
-            self.ui.myEpisodeListView.setModel(QtGui.QStandardItemModel())
             self.ui.mySavePushButton.setEnabled(False)
             self.ui.myWatchPushButton.setEnabled(False)
             self.mySeasonChosen = int(item.text())
@@ -200,22 +179,20 @@ class JankflixForm(QtGui.QWidget):
     def updateEpisodes(self):
         episodes = self.myLinkSite.getEpisodes(self.mySeasonChosen)
         episodeNames = self.myLinkSite.getEpisodeNames(self.mySeasonChosen)
-        episodesModel = QtGui.QStandardItemModel()
+        self.ui.myEpisodeListWidget.clear()
         for i in range(len(episodes)):
             if episodeNames:
-                item = QtGui.QStandardItem("%d : %s" % (episodes[i], episodeNames[i]))
+                self.ui.myEpisodeListWidget.addItem("%d : %s" % (episodes[i], episodeNames[i]))
             else:
-                item = QtGui.QStandardItem("%d" % (episodes[i]))
+                self.ui.myEpisodeListWidget.addItem("%d" % (episodes[i]))
             #using setAccessibleDescription as a place to store the episode number because can't find something cleaner.
-            item.setAccessibleDescription(str(episodes[i]))
-            episodesModel.appendRow(item)
-        self.ui.myEpisodeListView.setModel(episodesModel)
+            self.ui.myEpisodeListWidget.item(i).setStatusTip(str(episodes[i]))
         self.updateStatus("Please select an episode to watch...")
 
     def handleChoseEpisode(self):
-        item = self.getFirstSelectedItem(self.ui.myEpisodeListView)
+        item = self.getFirstSelectedItem(self.ui.myEpisodeListWidget)
         if item:
-            self.myEpisodeChosen = int(item.accessibleDescription())
+            self.myEpisodeChosen = int(item.statusTip())
             self.ui.mySavePushButton.setEnabled(True)
             self.ui.myWatchPushButton.setEnabled(True)
 
@@ -229,7 +206,8 @@ class JankflixForm(QtGui.QWidget):
                 metadata["extension"])
             filename = str(QtGui.QFileDialog.getSaveFileName(self, "Save File", "./" + filename))
             #            processs, status = downloadmanager.startDownloads([(videoURL, filename)])
-            self.myDownloadThread = self.createDownloadThread(videoURL, filename)
+            # self.myDownloadThread = self.createDownloadThread(videoURL, filename)
+            self.pc.addFile(videoURL,filename)
         else:
             self.updateStatus("Couldn't pick a host site. Try a different link site.")
 
@@ -242,7 +220,8 @@ class JankflixForm(QtGui.QWidget):
                 self.myQuery, str(self.mySeasonChosen).zfill(2), str(self.myEpisodeChosen).zfill(2),
                 metadata["extension"])
             #            processs, status = downloadmanager.startDownloads([(videoURL, filename)])
-            self.myDownloadThread = self.createDownloadThread(videoURL, filename)
+            # self.myDownloadThread = self.createDownloadThread(videoURL, filename)
+            self.pc.addFile(videoURL,filename)
             self.myFilename = filename
             self.waitForFile(filename)
             #opens arbitrary file in a platform-independent way. 
@@ -276,42 +255,6 @@ class JankflixForm(QtGui.QWidget):
         event.accept()
 
 
-class WorkThread(QtCore.QThread):
-    def __init__(self, parent, url, path, block_size=8192):
-        QtCore.QThread.__init__(self, parent)
-        self.statusSignal = QtCore.SIGNAL("statusSignal")
-        self.progressSignal = QtCore.SIGNAL("progressSignal")
-        self.url = url
-        self.path = path
-        self.block_size = block_size
-
-    def run(self):
-        print "in thread"
-        self.downloadFile(self.url, self.path, self.block_size)
-
-    def downloadFile(self, url, path, block_size=8192):
-        file_name = path.split('/')[-1]
-        values = {'User-Agent': USER_AGENT}
-        request = urllib2.Request(url, None, values)
-        response = urllib2.urlopen(request)
-        f = open(path, 'wb')
-        meta = response.info()
-        file_size = int(meta.getheaders("Content-Length")[0])
-        status = "Downloading: %s Bytes: %s" % (file_name, file_size)
-        self.emit(self.statusSignal, status)
-        file_size_dl = 0
-        while True:
-            buf = response.read(block_size)
-            if not buf:
-                break
-
-            file_size_dl += len(buf)
-            f.write(buf)
-            status = "%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
-            self.emit(self.statusSignal, status)
-            self.emit(self.progressSignal, file_size_dl * 100. / file_size)
-        self.emit(self.statusSignal, "done")
-        f.close()
 
 
 class WebRequestThread(QtCore.QThread):
