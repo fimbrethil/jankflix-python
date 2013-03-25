@@ -18,7 +18,11 @@ class TestLinkSite():
         seasons = self.getLinkSite().getSeasons()
         self.assertIsInstance(seasons, list, type(seasons))
         self.assertGreater(len(seasons), 0, len(seasons))
+        #Checks that none of the seasons are the same
+        seen = []
         for season in seasons:
+            self.assertNotIn(season, seen)
+            seen.append(season)
             self.assertIsInstance(season,int,type(season))
 
     def testGetEpisodes(self):
@@ -27,7 +31,11 @@ class TestLinkSite():
             episodes = self.getLinkSite().getEpisodes(season)
             self.assertIsInstance(episodes, list, type(episodes))
             self.assertGreater(len(episodes), 0, len(episodes))
+            #Checks that none of the episodes are the same
+            seen = []
             for episode in episodes:
+                self.assertNotIn(episode, seen)
+                seen.append(episode)
                 self.assertIsInstance(episode,int,type(episode))
 
     def testGetEpisodeNames(self):
@@ -58,8 +66,8 @@ class TestLinkSite():
             #make O(n) web calls where n is the number of total episodes
             host_site_types = self.getLinkSite().getHostSiteTypes(season, episodes[0])
             for host_site_type in host_site_types:
-                self.assertIsInstance(host_site_type,str,type(host_site_type))
-                self.assertGreater(len(host_site_type), 0,len(host_site_type))
+                self.assertIsInstance(host_site_type, str, type(host_site_type))
+                self.assertGreater(len(host_site_type), 0, len(host_site_type))
 
     def testGetHostSiteAtIndex(self):
         #because many link sites are rate-limited on the number of host-sites
@@ -71,7 +79,8 @@ class TestLinkSite():
         season = self.getLinkSite().getSeasons()[0]
         #pick the first episode
         episode = self.getLinkSite().getEpisodes(season)[0]
-        host_site_types = self.getLinkSite().getHostSiteTypes(season,episode)
+        #resolve host site types
+        host_site_types = self.getLinkSite().getHostSiteTypes(season, episode)
         #get the (0) index of the last host site
         index = len(host_site_types)-1
         #attempt to resolve it to a host site url
@@ -91,6 +100,11 @@ class TestTVLinks(unittest.TestCase, TestLinkSite):
 
 class TestTVLinks2(unittest.TestCase, TestLinkSite):
     link_site = TVLinks("http://www.tv-links.eu/tv-shows/Game-of-Thrones--_25243/")
+
+
+class TestTVLinks3(unittest.TestCase, TestLinkSite):
+    link_site = TVLinks("http://www.tv-links.eu/tv-shows/How-It-s-Made_23839/")
+
 
 
 class TestLinkSiteSearch():
