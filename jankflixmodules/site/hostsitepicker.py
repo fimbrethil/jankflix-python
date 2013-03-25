@@ -12,7 +12,7 @@ def isSupportedHostSite(host_site_type):
         if host_site.getName() in host_site_type:
             return host_site
 
-def pickFromLinkSite(link_site,season,episode):
+def pickFromLinkSite(link_site, season, episode):
     assert isinstance(link_site, LinkSite)
     assert isinstance(season, int)
     assert isinstance(episode, int)

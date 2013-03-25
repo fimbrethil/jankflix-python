@@ -104,10 +104,10 @@ class OneChannel(LinkSite):
         return str(responseSoup.url)
     @staticmethod
     def prefetchSearchKey():
-        print "prefetched key"
         surl = "http://www.1channel.ch/index.php"
         soup = OneChannel.getPageSoup(surl)
         key = soup.find("input", {"type":"hidden", "name":"key"}).get("value")
+        print "prefetched key:%s" % key
         return key
     @staticmethod
     def searchSite(query, key=None):
@@ -131,4 +131,5 @@ class OneChannel(LinkSite):
         for result in results:
             a = result.find("a")
             ret.append((str(a.get("title")), "http://www.1channel.ch" + str(a.get("href"))))
+        print "done"
         return ret

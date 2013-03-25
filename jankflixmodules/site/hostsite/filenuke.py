@@ -42,8 +42,8 @@ class FileNuke(HostSite):
         for script in scripts:
             text = script.getText()
             if text[0:4] == "eval" and "SWFObject" in text:
-                script =  stringutils.decode_packed_javascript(text)
-                after = get_after(script,"addVariable('file','")
+                script = stringutils.decode_packed_javascript(text)
+                after = get_after(script, "addVariable('file','")
                 middle = get_before(after,"');")
                 return middle
 

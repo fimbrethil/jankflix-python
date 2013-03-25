@@ -22,9 +22,9 @@ class FileBox(HostSite):
     def getVideo(self):
         newsoup = self.getStep2()
         target_div = newsoup.find("div", {"class":"getpremium_heading4"})
-        almost_link = target_div.center.input["onclick"]
-        #get after the beginning document.location=' business and remove the last character which is a '
-        return stringutils.get_after(almost_link,"document.location='")[:-1]
+        links = target_div.findAll("center")
+        return stringutils.get_after(links[1].input["onclick"],"document.location='")[:-1]
+            #get after the beginning document.location=' business and remove the last character which is a '
 
     @memoized
     def getStep2(self):
