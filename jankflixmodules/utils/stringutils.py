@@ -20,9 +20,7 @@ def decode_packed_javascript(packed):
             p_ack_break = index
             break
     
-    base62 = list('0123456789abcdefghijklmnopqrstuvwxyz')
-    base62.append("10")
-    base62.append("11")
+    base62 = list('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
     p = pack[:p_ack_break].replace("\\'","'")
     ack = pack[p_ack_break:]
     ack = ack.replace("'","")
@@ -34,7 +32,7 @@ def decode_packed_javascript(packed):
     k = get_before(k, ".split")
     k_arr = k.split("|")
     while c:
-        c = c-1
+        c -= 1
         if k_arr[c] != "":
             exp = re.compile(r'\b%s\b' % base62[c])
             p = exp.sub(k_arr[c],p)
