@@ -195,7 +195,6 @@ class JankflixForm(QtGui.QWidget):
             self.myEpisodeChosen = int(item.statusTip())
             self.ui.mySavePushButton.setEnabled(True)
             self.ui.myWatchPushButton.setEnabled(True)
-            self.ui.textBrowser.setText(self.myLinkSite.getSummary(self.mySeasonChosen,self.myEpisodeChosen))
 
     def handleSave(self):
         hostSite = hostsitepicker.pickFromLinkSite(self.myLinkSite, self.mySeasonChosen, self.myEpisodeChosen)
