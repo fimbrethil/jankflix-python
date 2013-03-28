@@ -1,3 +1,4 @@
+import re
 from BeautifulSoup import BeautifulSoup
 from jankflixmodules.site.template import HostSite
 from jankflixmodules.utils import stringutils
@@ -47,7 +48,7 @@ class Gorillavid(HostSite):
 
     @memoized
     def getStep2(self):
-        form = self.getSoup().find("form", method="POST")        
+        form = self.getSoup().find(re.compile("form", re.I), method="POST")
         return self.submitPostRequest(form)
     
 class Movpod(Gorillavid):
