@@ -55,7 +55,7 @@ class TestGorillavid2(unittest.TestCase, TestHostSite):
 
 
 class TestDaclips(unittest.TestCase, TestHostSite):
-    host_site = Daclips("http://daclips.in/wdl6vubb3nde")
+    host_site = Daclips("http://daclips.in/8d87cu8zxm3g")
 
 
 class TestMovpod(unittest.TestCase, TestHostSite):
