@@ -39,5 +39,5 @@ def decide(show):
     sorted_sites.reverse()
     print sorted_sites
                     
-    
+
 decide("avatar")

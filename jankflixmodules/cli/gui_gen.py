@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file './gui.ui'
 #
-# Created: Thu Mar 28 09:30:15 2013
+# Created: Thu Mar 28 10:43:30 2013
 #      by: PyQt4 UI code generator 4.9.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -77,9 +77,9 @@ class Ui_Form(object):
         self.label_2 = QtGui.QLabel(Form)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.gridLayout.addWidget(self.label_2, 12, 0, 1, 1)
-        self.textBrowser = QtGui.QTextBrowser(Form)
-        self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
-        self.gridLayout.addWidget(self.textBrowser, 14, 0, 1, 2)
+        self.mySummaryTextBrowser = QtGui.QTextBrowser(Form)
+        self.mySummaryTextBrowser.setObjectName(_fromUtf8("mySummaryTextBrowser"))
+        self.gridLayout.addWidget(self.mySummaryTextBrowser, 14, 0, 1, 2)
         self.myResultsListWidget = QtGui.QListWidget(Form)
         self.myResultsListWidget.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.myResultsListWidget.setObjectName(_fromUtf8("myResultsListWidget"))
@@ -108,7 +108,7 @@ class Ui_Form(object):
         self.myWatchPushButton.setText(QtGui.QApplication.translate("Form", "Watch", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("Form", "Search For TV Show", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("Form", "Season", None, QtGui.QApplication.UnicodeUTF8))
-        self.textBrowser.setHtml(QtGui.QApplication.translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.mySummaryTextBrowser.setHtml(QtGui.QApplication.translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"

@@ -61,13 +61,13 @@ files = find_data_files('jankflixmodules/', '*.*')
 
 
 setup(name = "jankflix",
-    version = "1.1.2",
+    version = "1.1.3",
     description = "Jankflix: A jankier way to watch things",
     author = "fimbrethil",
     author_email = "fimbrethil.wandlimb@gmail.com",
     url = "https://github.com/fimbrethil/jankflix-python",
     packages = ['jankflixmodules'],
-    requires = ['BeautifulSoup'],
+    requires = ['BeautifulSoup (>=3.2)'],
     data_files = files,
 
     ## Borrowed from wxPython too:

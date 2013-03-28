@@ -1,4 +1,5 @@
 from PyQt4 import QtCore, QtGui
+import functools
 from gui_gen import Ui_Form
 from jankflixmodules.cli.downloader import ProgressCancel
 from jankflixmodules.site import hostsitepicker
@@ -58,8 +59,10 @@ class JankflixForm(QtGui.QWidget):
     def createWebRequestThread(self, updateMethod, httpMethod, *args):
         #the or is because both updateMethod and httpMethod can be either methods specified in the class
         #or lambdas specified in the calling method
-        assert isinstance(updateMethod, types.FunctionType) or isinstance(updateMethod, types.MethodType)
-        assert isinstance(httpMethod, types.FunctionType) or isinstance(httpMethod, types.MethodType)
+        assert isinstance(updateMethod, types.FunctionType) or isinstance(updateMethod, types.MethodType), \
+            ("type is actually %s", type(updateMethod))
+        assert isinstance(httpMethod, types.FunctionType) or isinstance(httpMethod, types.MethodType) \
+            or isinstance(httpMethod, functools.partial), ("type is actually %s", type(httpMethod))
         assert isinstance(args, tuple)
         #if any webrequest is running, terminate it and start this one instead
         if self.myWebRequestThread is not None:
@@ -195,6 +198,10 @@ class JankflixForm(QtGui.QWidget):
             self.myEpisodeChosen = int(item.statusTip())
             self.ui.mySavePushButton.setEnabled(True)
             self.ui.myWatchPushButton.setEnabled(True)
+            self.createWebRequestThread(self.updateSummary, self.myLinkSite.getSummary, self.mySeasonChosen, self.myEpisodeChosen)
+
+    def updateSummary(self, summary):
+        self.ui.mySummaryTextBrowser.setText(summary)
 
     def handleSave(self):
         self.createWebRequestThread(self.doSave, hostsitepicker.pickFromLinkSite, self.myLinkSite, self.mySeasonChosen, self.myEpisodeChosen)
