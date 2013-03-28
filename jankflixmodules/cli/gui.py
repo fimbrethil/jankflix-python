@@ -197,7 +197,9 @@ class JankflixForm(QtGui.QWidget):
             self.ui.myWatchPushButton.setEnabled(True)
 
     def handleSave(self):
-        hostSite = hostsitepicker.pickFromLinkSite(self.myLinkSite, self.mySeasonChosen, self.myEpisodeChosen)
+        self.createWebRequestThread(self.doSave, hostsitepicker.pickFromLinkSite, self.myLinkSite, self.mySeasonChosen, self.myEpisodeChosen)
+
+    def doSave(self, hostSite):
         if hostSite:
             metadata = hostSite.getMetadata()
             videoURL = hostSite.getVideo()
@@ -212,7 +214,9 @@ class JankflixForm(QtGui.QWidget):
             self.updateStatus("Couldn't pick a host site. Try a different link site.")
 
     def handleOpen(self):
-        hostSite = hostsitepicker.pickFromLinkSite(self.myLinkSite, self.mySeasonChosen, self.myEpisodeChosen)
+        self.createWebRequestThread(self.doOpen, hostsitepicker.pickFromLinkSite, self.myLinkSite, self.mySeasonChosen, self.myEpisodeChosen)
+
+    def doOpen(self, hostSite):
         if hostSite:
             metadata = hostSite.getMetadata()
             videoURL = hostSite.getVideo()
