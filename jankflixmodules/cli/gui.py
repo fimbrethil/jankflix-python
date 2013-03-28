@@ -56,7 +56,14 @@ class JankflixForm(QtGui.QWidget):
     def setPrefetchedKey(self, key):
         self.prefetchedKey = key
 
-    def createWebRequestThread(self, updateMethod, httpMethod, *args):
+    def createWebRequestThread(self, updateMethod, httpMethod, *args, **kwargs):
+        """
+        A way to make web calls without blocking the gui thread.
+        @param updateMethod: Method to be called when the result is available. Will be called with the result as an arg.
+        @param httpMethod: Method to be called asynchronously. After this is done, updateMethod is called.
+        @param args: Args to be fed into httpMethod
+        @param kwargs: optional listWidget or textBrowser to insert elipses into to indicate loading
+        """
         #the or is because both updateMethod and httpMethod can be either methods specified in the class
         #or lambdas specified in the calling method
         assert isinstance(updateMethod, types.FunctionType) or isinstance(updateMethod, types.MethodType), \
@@ -65,6 +72,17 @@ class JankflixForm(QtGui.QWidget):
             or isinstance(httpMethod, functools.partial), ("type is actually %s", type(httpMethod))
         assert isinstance(args, tuple)
         #if any webrequest is running, terminate it and start this one instead
+        lvwidg = "listWidget"
+        tb = "textBrowser"
+        if lvwidg in kwargs:
+            listWidget = kwargs[lvwidg]
+            assert isinstance(listWidget, QtGui.QListWidget)
+            self.updateListWidget(["..."], listWidget)
+        elif tb in kwargs:
+            textBrowser = kwargs[tb]
+            assert isinstance(textBrowser, QtGui.QTextBrowser)
+            textBrowser.setText("...")
+
         if self.myWebRequestThread is not None:
             self.myWebRequestThread.terminate()
         wrThread = WebRequestThread(self, httpMethod, *args)
@@ -139,7 +157,7 @@ class JankflixForm(QtGui.QWidget):
             #create result depending on which linksite was checked
             if self.myAreResultsTvLinks:
                 self.updateStatus("Searching TVLinks for %s" % (self.myQuery))
-                self.createWebRequestThread(self.updateSearchResults, TVLinks.searchSite, self.myQuery)
+                self.createWebRequestThread(self.updateSearchResults, TVLinks.searchSite, self.myQuery, listWidget=self.ui.myResultsListWidget)
             else:
                 self.updateStatus("Searching OneChannel for %s" % (self.myQuery))
                 if self.prefetchedKey is None:
@@ -148,7 +166,7 @@ class JankflixForm(QtGui.QWidget):
                 else:
                     print "using prefetched key"
                     searchMethod = lambda query: OneChannel.searchSite(query, self.prefetchedKey)
-                self.createWebRequestThread(self.updateSearchResults, searchMethod, self.myQuery)
+                self.createWebRequestThread(self.updateSearchResults, searchMethod, self.myQuery, listWidget=self.ui.myResultsListWidget)
 
     def handleChoseResult(self):
         index = self.getFirstSelectedIndex(self.ui.myResultsListWidget)
@@ -168,7 +186,7 @@ class JankflixForm(QtGui.QWidget):
         else:
             self.myLinkSite = OneChannel(url)
         seasonUpdateMethod = lambda data: self.updateListWidget(data, self.ui.mySeasonListWidget)
-        self.createWebRequestThread(seasonUpdateMethod, self.myLinkSite.getSeasons)
+        self.createWebRequestThread(seasonUpdateMethod, self.myLinkSite.getSeasons, listWidget=self.ui.mySeasonListWidget)
 
     def handleChoseSeason(self):
         item = self.getFirstSelectedItem(self.ui.mySeasonListWidget)
@@ -198,7 +216,7 @@ class JankflixForm(QtGui.QWidget):
             self.myEpisodeChosen = int(item.statusTip())
             self.ui.mySavePushButton.setEnabled(True)
             self.ui.myWatchPushButton.setEnabled(True)
-            self.createWebRequestThread(self.updateSummary, self.myLinkSite.getSummary, self.mySeasonChosen, self.myEpisodeChosen)
+            self.createWebRequestThread(self.updateSummary, self.myLinkSite.getSummary, self.mySeasonChosen, self.myEpisodeChosen, textBrowser=self.ui.mySummaryTextBrowser)
 
     def updateSummary(self, summary):
         self.ui.mySummaryTextBrowser.setText(summary)
