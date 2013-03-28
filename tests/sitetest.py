@@ -12,7 +12,7 @@ import unittest
 
 class TestHostSitePicker():
     def getLinkSite(self):
-        raise NotImplementedError()
+        return self.link_site
 
     def testIsSupportedHostSite(self):
         self.assertTrue(hostsitepicker.isSupportedHostSite("putlocker"), "putlocker is supported hostsite")
@@ -31,15 +31,9 @@ class TestHostSitePicker():
 class OneChannelPickingTest(unittest.TestCase, TestHostSitePicker):
     link_site = OneChannel("http://www.1channel.ch/watch-9583-Avatar-The-Last-Airbender")
 
-    def getLinkSite(self):
-        return self.link_site
-
 
 class TVLinkslPickingTest(unittest.TestCase, TestHostSitePicker):
     link_site = TVLinks("http://www.tv-links.eu/tv-shows/Avatar--The-Last-Airbender_76/")
-
-    def getLinkSite(self):
-        return self.link_site
 
 
 if __name__ == "__main__":
