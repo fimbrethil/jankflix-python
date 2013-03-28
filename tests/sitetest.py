@@ -11,6 +11,9 @@ import unittest
 
 
 class TestHostSitePicker():
+    def setUp(self):
+        print "Testing url in sitetest:", self.getLinkSite()
+
     def getLinkSite(self):
         return self.link_site
 

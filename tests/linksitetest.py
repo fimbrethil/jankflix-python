@@ -10,6 +10,8 @@ from jankflixmodules.site.template import LinkSite
 
 
 class TestLinkSite():
+    def setUp(self):
+        print "Testing url in linksitetest:", self.getLinkSite()
 
     def getLinkSite(self):
         return self.link_site
