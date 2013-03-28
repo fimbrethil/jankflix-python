@@ -50,7 +50,7 @@ class JankflixForm(QtGui.QWidget):
         # if not hasattr(self, "prefetchedKey") or self.prefetchedKey is not None:
         #     self.createWebRequestThread(self.setPrefetchedKey, OneChannel.prefetchSearchKey)
         self.setPrefetchedKey(None)
-        self.pc = ProgressCancel(self, self.ui.myDownloadGridLayout)
+        self.pc = ProgressCancel(self, self.ui.myProgressCancelVerticalLayout)
 
     def setPrefetchedKey(self, key):
         self.prefetchedKey = key

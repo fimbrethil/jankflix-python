@@ -4,11 +4,11 @@ from jankflixmodules.utils.constants import USER_AGENT
 
 
 class ProgressCancel:
-    def __init__(self, parent, downloadGridLayout):
+    def __init__(self, parent, myProgressCancelVerticalLayout):
         self.progressBars = []
         self.cancelButtons = []
         self.workThreads = []
-        self.downloadGridLayout = downloadGridLayout
+        self.myProgressCancelVerticalLayout = myProgressCancelVerticalLayout
         self.parent = parent
 
     def addFile(self, url, path):
@@ -35,18 +35,16 @@ class ProgressCancel:
         return workThread
 
     def addDownloadProgressAndButton(self):
-        numRows = self.downloadGridLayout.rowCount()
-
+        myHorizontalLayout = QtGui.QHBoxLayout()
         myProgressBar = QtGui.QProgressBar(self.parent)
         myProgressBar.setEnabled(False)
         myProgressBar.setProperty("value", 0)
-        myProgressBar.setTextVisible(True)
-        self.downloadGridLayout.addWidget(myProgressBar, numRows + 1, 0, 1, 1)
-        myCancelPushButton = QtGui.QPushButton(self.parent)
-        myCancelPushButton.setText("Cancel")
-
-        self.downloadGridLayout.addWidget(myCancelPushButton, numRows + 1, 1, 1, 1)
-        return [myProgressBar, myCancelPushButton]
+        myHorizontalLayout.addWidget(myProgressBar)
+        myCancelButton = QtGui.QPushButton(self.parent)
+        myCancelButton.setText("Cancel")
+        myHorizontalLayout.addWidget(myCancelButton)
+        self.myProgressCancelVerticalLayout.addLayout(myHorizontalLayout)
+        return [myProgressBar, myCancelButton]
 
     def handleCancelClicked(self, index):
         print index, "clicked"
